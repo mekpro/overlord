@@ -20,5 +20,6 @@ def getJobForHost(hostname):
   result = []
   hostlist = load_hostlist()
   nexthostid  = random.randint(0,len(hostlist)-1)
-  result.append(hostlist[nexthostid])
+  result.append({'type': 'ping', 'hostname': hostlist[nexthostid]})
+  result.append({'type': 'iperf', 'hostname': hostlist[nexthostid]})
   return result

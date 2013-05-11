@@ -15,10 +15,10 @@ def authen(hostname, authkey):
 
 def record_values(hostname, results):
   for r in results:
-    logging.info("value : %s" %str(r))
+    logging.error("value : %s" %str(r))
 
 def record_state(hostname, state):
-  logging.info("host %s state %s" %(hostname,state))
+  logging.error("host %s state %s" %(hostname,state))
 
 @post('/listen')
 def index(hostname=0):
@@ -31,6 +31,7 @@ def index(hostname=0):
   jobs = scheduler.getJobForHost(d["hostname"])
   result = dict()
   result['jobs'] = jobs
+  logging.error(str(result))
   return result
 
 if __name__ == '__main__':
