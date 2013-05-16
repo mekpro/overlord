@@ -3,21 +3,24 @@ import bottle
 from bottle import route, run, request, template
 from bottle import static_file
 from pymongo import MongoClient
+import query
 
 import common
-
-def get_hostlist():
-  #  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
-  return ['fe','c0','c1']
 
 @route('/assets/<filepath:path>')
 def server_static(filepath):
   return static_file(filepath, root='/home/mekpro/workspace/overlord/web/assets')
 
+@route('/')
+def route_root():
+  bottle.redirect("/index")
+
 @route('/index')
 def index():
   last_update = datetime.datetime.now()
-  return template('index_template', last_update=last_update)
+  hostlist = query.hostlist()
+  graph = query.graph()
+  return template('index_template', hostlist=hostlist, last_update=last_update)
 
 @route('/host')
 def host():
