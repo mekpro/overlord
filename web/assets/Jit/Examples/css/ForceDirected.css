@@ -15,11 +15,15 @@
 
 #infovis {
     position:relative;
-    width:600px;
-    height:600px;
+    width:720px;
+    height:500px;
     margin:auto;
     overflow:hidden;
 }
+
+.hero-unit {
+    background-color: #1a1a1a;
+}   
 
 /*TOOLTIPS*/
 .tip {

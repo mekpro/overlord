@@ -31,6 +31,9 @@
     <!-- JIT visualization -->
     <script language="javascript" type="text/javascript" src="/assets/Jit/jit.js"></script>
     <link href="/assets/Jit/Examples/css/ForceDirected.css" rel="stylesheet"/>
+    <script language=javascript>
+      var json = {{!graph}}
+    </script>
     <script language="javascript" type="text/javascript" src="/assets/Jit/Examples/ForceDirected/example1.js"></script>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->

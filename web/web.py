@@ -3,8 +3,10 @@ import bottle
 from bottle import route, run, request, template
 from bottle import static_file
 from pymongo import MongoClient
-import query
+import json
+import logging
 
+import query
 import common
 
 @route('/assets/<filepath:path>')
@@ -19,8 +21,9 @@ def route_root():
 def index():
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
-  graph = query.graph()
-  return template('index_template', hostlist=hostlist, last_update=last_update)
+  graph = json.dumps(query.graph())
+  logging.error(graph)
+  return template('index_template', graph=graph, hostlist=hostlist, last_update=last_update)
 
 @route('/host')
 def host():
