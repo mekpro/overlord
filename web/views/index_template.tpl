@@ -5,8 +5,9 @@
     <title>Network Status</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
     <!-- Le styles -->
-    <link href="../assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -27,6 +28,11 @@
     </style>
     <link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
 
+    <!-- JIT visualization -->
+    <script language="javascript" type="text/javascript" src="/assets/Jit/jit.js"></script>
+    <link href="/assets/Jit/Examples/css/ForceDirected.css" rel="stylesheet"/>
+    <script language="javascript" type="text/javascript" src="/assets/Jit/Examples/ForceDirected/example1.js"></script>
+
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="../assets/js/html5shiv.js"></script>
@@ -40,7 +46,7 @@
                                    <link rel="shortcut icon" href="../assets/ico/favicon.png">
   </head>
 
-  <body>
+  <body onload="init();">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -73,22 +79,22 @@
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
+
         <div class="span9">
           <div class="hero-unit">
-            <h1>Hello, world!</h1>
-            <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-            <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+            <div id="infovis"></div>
           </div>
+          <div>
+          </div>
+
           <div class="row-fluid">
             <div class="span4">
               <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
+             <div id="inner-details"></div> 
             </div><!--/span-->
             <div class="span4">
               <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
+              <div id="log"></div>
             </div><!--/span-->
             <div class="span4">
               <h2>Heading</h2>
