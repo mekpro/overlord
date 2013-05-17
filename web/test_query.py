@@ -54,3 +54,4 @@ if __name__ == '__main__':
   hostlist = query.hostlist()
   print hostlist
   print query.host_tables(hostlist[0], "ping")
+  print query.graph()

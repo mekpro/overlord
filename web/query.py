@@ -15,7 +15,6 @@ def host_tables(hostname, metric="ping", dt=None):
   conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
   if dt is None:
     dt = datetime.datetime.now()
-  print hostname
   src_host = conn.host.find_one({'hostname':hostname})
   dest_hosts = conn.host.find()
   for dest_host in dest_hosts:
@@ -26,7 +25,33 @@ def host_tables(hostname, metric="ping", dt=None):
   return table
 
 def graph():
+  graph = list()
   conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  for hostname in hostlist():
+    node = {
+            "id": hostname,
+            "name": hostname,
+            "data" : {
+              "$color" : "#83548B",
+              "$type" : "circle",
+              "$dim" : 10
+            },
+            "adjacencies" : [hostname]
+          }
+    iperf_tables = host_tables(hostname, "iperf")
+    for row in iperf_tables:
+      adj = {
+        "nodeTo": row["dest"],
+        "nodeFrom": hostname,
+        "data": {"$color": "#557EAA"},
+        }
+      node["adjacencies"].append(adj)
+    graph.append(node)
+
+  return graph
+
+
+def graph_ref():
   graph = list()
   fe = { "adjacencies": [
               "fe", {
