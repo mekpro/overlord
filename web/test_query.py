@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import datetime
 import logging
 import common
+import query
 
 def cleardb():
   conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
@@ -49,3 +50,7 @@ if __name__ == '__main__':
   print "values count: %d" %conn['values'].count()
   create_values('iperf', iperf_values, 20)
   print "values count: %d" %conn['values'].count()
+ 
+  hostlist = query.hostlist()
+  print hostlist
+  print query.host_tables(hostlist[0], "ping")
