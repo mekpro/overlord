@@ -10,9 +10,13 @@ def hostlist():
     hostlist.append(host["hostname"])
   return ['fe','c0','c1']
 
-def host_tables(hostname):
+def host_tables(hostname, metric="ping"):
   conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
   host = conn.host.findOne(hostname=hostname)
+  if metric == 'ping':
+    pass
+  elif metric == 'iperf':
+    pass
 
 def graph():
   conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]

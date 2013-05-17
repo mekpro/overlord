@@ -45,6 +45,8 @@ def init_test_data():
   conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
   hostdb = conn['host']
   hostdb.drop()
+  valuesdb = conn['values']
+  valuesdb.drop()
   hosts = ['localhost']
 #  hosts = ['fe','c0','c1','c2']
   for hostname in hosts:
