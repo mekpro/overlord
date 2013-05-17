@@ -4,13 +4,12 @@ import json
 import time
 import requests
 import logging
-from daemon import Daemon
+import config
+from lib.daemon import Daemon
 
 from lib import iperfshell
 from lib import pingshell
 
-SERVER = "http://localhost:8081/listen"
-INTERVAL = 15
 
 def spawn_iperf_server(port=None):
   os.popen('killall -9 -v iperf')
@@ -33,7 +32,7 @@ class Agent(Daemon):
     request["state"] = 'idle'
     request["results"] = []
     while True:
-      logger.info('connecting to %s with %s' %(SERVER,json.dumps(request)))
+      logger.info('connecting to %s with %s' %(config.SERVER, json.dumps(request)))
       response = requests.post(SERVER, data=json.dumps(request), headers=headers)
       request["results"] = []
       logger.info('response: %s' %(response.json()))
@@ -41,7 +40,7 @@ class Agent(Daemon):
       jobs = response["jobs"]
       if len(jobs) == 0:
         logger.info('Sleeping ...')
-        time.sleep(INTERVAL)
+        time.sleep(config.INTERVAL)
       else:
         for job in jobs:
           if job['type'] == 'iperf':
@@ -55,7 +54,7 @@ class Agent(Daemon):
           request["results"].append(result)
 
 if __name__ == '__main__':
-  daemon = Agent('/tmp/overlord_agent.pid')
+  daemon = Agent(config.PID_FILE)
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
       #daemon.run()
