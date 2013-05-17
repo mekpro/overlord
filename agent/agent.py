@@ -10,30 +10,28 @@ from lib.daemon import Daemon
 from lib import iperfshell
 from lib import pingshell
 
+logger = logging.getLogger('Agent')
+hdlr = logging.FileHandler('/tmp/overlord_agent.log')
+logger.addHandler(hdlr)
+logger.setLevel(logging.INFO)
 
 def spawn_iperf_server(port=None):
   os.popen('killall -9 -v iperf')
-  output = os.popen('/usr/bin/iperf -s -D | grep ID').read()
-#  process_id = int(output.split()[-1])
-  return 0
+  output = os.system('/usr/bin/iperf -s -D &')
+  print 'iperf started'
 
 class Agent(Daemon):
   def run(self):
-    logger = logging.getLogger('Agent')
-    hdlr = logging.FileHandler('/tmp/overlord_agent.log')
-    logger.addHandler(hdlr)
-    logger.setLevel(logging.INFO)
-
-    iperf_pid = spawn_iperf_server()
+    spawn_iperf_server()
     headers = {'content-type': 'application/json'}
     request = dict()
-    request["hostname"] = 'myhostname'
-    request["authkey"] = 'myauthkey'
+    request["hostname"] = config.AGENT_HOSTNAME 
+    request["authkey"] = 'none'
     request["state"] = 'idle'
     request["results"] = []
     while True:
       logger.info('connecting to %s with %s' %(config.SERVER, json.dumps(request)))
-      response = requests.post(SERVER, data=json.dumps(request), headers=headers)
+      response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
       request["results"] = []
       logger.info('response: %s' %(response.json()))
       response = response.json()
@@ -43,22 +41,28 @@ class Agent(Daemon):
         time.sleep(config.INTERVAL)
       else:
         for job in jobs:
+          result = dict()
+          result['src'] = config.AGENT_HOSTNAME
+          result['dest'] = job["hostname"]
           if job['type'] == 'iperf':
+            result['type'] = 'iperf'
             tmp = iperfshell.run_iperf(job["hostname"])
-            result = iperfshell.parse_iperf(tmp)
+            values = iperfshell.parse_iperf(tmp)
           elif job['type'] == 'ping':
+            result['type'] = 'ping'
             tmp = pingshell.run_ping(job["hostname"])
-            result = pingshell.parse_ping(tmp)
+            values = pingshell.parse_ping(tmp)
           else:
-            result = None
+            values = None
+          result["values"] = values
           request["results"].append(result)
 
 if __name__ == '__main__':
   daemon = Agent(config.PID_FILE)
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
-      #daemon.run()
-      daemon.start()
+      daemon.run()
+      #daemon.start()
     elif 'stop' == sys.argv[1]:
       daemon.stop()
     elif 'restart' == sys.argv[1]:

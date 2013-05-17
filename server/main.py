@@ -13,6 +13,7 @@ def authen(hostname, authkey):
 def record_values(src_hostname, values):
   conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
   db_value = conn.values
+  logging.error("values : %s" %str(values))
   for r in values:
     row = dict()
     row["src"] = src_hostname
@@ -47,8 +48,7 @@ def init_test_data():
   hostdb.drop()
   valuesdb = conn['values']
   valuesdb.drop()
-  hosts = ['localhost']
-#  hosts = ['fe','c0','c1','c2']
+  hosts = ['fe','c0','c1','c2']
   for hostname in hosts:
     h = {'hostname': hostname, 'authkey': 'none'}
     hostdb.insert(h)
@@ -56,4 +56,4 @@ def init_test_data():
 if __name__ == '__main__':
   init_test_data()
   scheduler.initialize()
-  run(host='localhost', port=8081)
+  run(host='0.0.0.0', port=8081)
