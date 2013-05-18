@@ -53,8 +53,9 @@ class Agent(Daemon):
             tmp = pingshell.run_ping(job["hostname"])
             values = pingshell.parse_ping(tmp)
           else:
-            values = None
-          result["values"] = values
+            values = {}
+          for k,v in values.iteritems():
+            result[k] = v
           request["results"].append(result)
 
 if __name__ == '__main__':

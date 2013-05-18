@@ -7,11 +7,11 @@ import json
 import logging
 
 import query
-import common
+import config 
 
 @route('/assets/<filepath:path>')
 def server_static(filepath):
-  return static_file(filepath, root='/home/mekpro/workspace/overlord/web/assets')
+  return static_file(filepath, root=config.STATIC_ROOT)
 
 @route('/')
 def route_root():

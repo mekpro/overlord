@@ -21,10 +21,18 @@ def record_values(src_hostname, values):
     row["dt"] = datetime.datetime.now()
     row["dest"] = r["dest"]
     row["type"] = r["type"]
-    for k,v in r["values"].items():
-      row[k] = v
-    db_value.insert(row)
-    logging.error("recording : %s" %str(row))
+    if row["type"] == 'ping':
+      row["min"] = int(r["min"])
+      row["max"] = int(r["max"])
+      row["avg"] = int(r["avg"])
+      db_value.insert(row)
+      logging.error("recording : %s" %str(row))
+    elif row["type"] == 'iperf':
+      row["bandwidth"] = int(r["bandwidth"])
+      db_value.insert(row)
+      logging.error("recording : %s" %str(row))
+    else:
+      logging.error("invalid value type: %s" %srow["type"])
 
 def record_state(hostname, state):
   logging.error("host %s state %s" %(hostname,state))

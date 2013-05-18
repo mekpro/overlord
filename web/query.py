@@ -1,10 +1,11 @@
 import datetime
 from pymongo import MongoClient
+import logging
 
-import common
+import config
 
 def hostlist():
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   hostlist = []
   for host in conn.host.find():
     hostlist.append(host["hostname"])
@@ -12,21 +13,25 @@ def hostlist():
 
 def host_tables(hostname, metric="ping", dt=None):
   table = list()
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   if dt is None:
     dt = datetime.datetime.now()
   src_host = conn.host.find_one({'hostname':hostname})
   dest_hosts = conn.host.find()
   for dest_host in dest_hosts:
-    query = {'src': src_host['hostname'], 'dest': dest_host['hostname']}
+    query = {'src': src_host['hostname'], 'dest': dest_host['hostname'], 'type':metric}
     value = conn["values"].find_one(query)
+    logging.error(value)
     if value is not None:
-      table.append({'dest': dest_host['hostname'], 'dt': value["dt"] ,'values':value["values"]})
+      if metric == 'ping':
+        table.append({'dest': dest_host['hostname'], 'dt': value["dt"] ,'min': value["min"], 'max': value["max"], 'avg': value["avg"]})
+      elif metric == 'iperf':
+        table.append({'dest': dest_host['hostname'], 'dt': value["dt"] ,'bandwidth':value["bandwidth"]})
   return table
 
 def graph():
   graph = list()
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   for hostname in hostlist():
     node = {
             "id": hostname,

@@ -1,16 +1,16 @@
 from pymongo import MongoClient
 import datetime
 import logging
-import common
+import config
 import query
 
 def cleardb():
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   conn['host'].drop()
   conn['values'].drop()
 
 def create_hosts(hosts):
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   hostdb = conn['host']
   hostdb.drop()
   for hostname in hosts:
@@ -18,7 +18,7 @@ def create_hosts(hosts):
     hostdb.insert(h)
 
 def create_values(value_type, values, count=1, time_step=60):
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   start_dt = datetime.datetime.now() - datetime.timedelta(count*time_step)
   hosts_i = conn['host'].find()
   hosts_j = conn['host'].find()
@@ -40,7 +40,7 @@ if __name__ == '__main__':
   iperf_values = {'bandwidth': 1234567}
   hosts = ['fe','c0','c1','c2']
 
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   cleardb()
   print "Database Cleared"
 
