@@ -21,7 +21,7 @@ def host_tables(hostname, metric="ping", dt=None):
   for dest_host in dest_hosts:
     query = {'src': src_host['hostname'], 'dest': dest_host['hostname'], 'type':metric}
     value = conn["values"].find_one(query)
-    logging.error(value)
+    logging.error("%s %s %s" %(src_host['hostname'], dest_host['hostname'], str(value)))
     if value is not None:
       if metric == 'ping':
         table.append({'dest': dest_host['hostname'], 'dt': value["dt"] ,'min': value["min"], 'max': value["max"], 'avg': value["avg"]})

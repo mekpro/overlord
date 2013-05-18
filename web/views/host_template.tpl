@@ -93,43 +93,52 @@
         </div><!--/span-->
         <div class="span9">
           <div class="hero-unit">
-            <h1>Hello, world!</h1>
-            <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+            <h1>{{hostname}}</h1>
+            <p>Hostinfo</p>
             <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
           </div>
-          <div class="row-fluid">
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-          </div><!--/row-->
-          <div class="row-fluid">
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
+          <div>
+            <h2>Ping Table</h2>
+            <table class='table'>
+              <tr>
+                <th>Destination</th>
+                <th>Last Update</th>
+                <th>min</th>
+                <th>max</th>
+                <th>avg</th>
+              </tr>
+              %for row in ping_table:
+              <tr>
+                <td>{{row["dest"]}}</td>
+                <td>{{row["dt"]}}</td>
+                <td>{{row["min"]}}</td>
+                <td>{{row["max"]}}</td>
+                <td>{{row["avg"]}}</td>
+              </tr>
+              %end
+            </table>
+          </div>
+          <div>
+            <h2>Iperf Table</h2>
+            <table class='table'>
+              <tr>
+              <tr>
+                <th>Destination</th>
+                <th>Last Update</th>
+                <th>bandwidth</th>
+              </tr>
+              %for row in iperf_table: 
+              <tr>
+                <td>{{row["dest"]}}</td>
+                <td>{{row["dt"]}}</td>
+                <td>{{row["bandwidth"]}}</td>
+              </tr>
+              %end
+            </table>
+ 
+              </tr>
+            </table>
+          </div>
           </div><!--/row-->
         </div><!--/span-->
       </div><!--/row-->
