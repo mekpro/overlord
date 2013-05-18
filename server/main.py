@@ -5,13 +5,14 @@ from pymongo import MongoClient
 import logging
 
 import common
+import config
 import scheduler_simple as scheduler
 
 def authen(hostname, authkey):
   return True
 
 def record_values(src_hostname, values):
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   db_value = conn.values
   logging.error("values : %s" %str(values))
   for r in values:
@@ -43,7 +44,7 @@ def index(hostname=0):
   return result
 
 def init_test_data():
-  conn = MongoClient(common.MONGO_SERVER)[common.MONGO_DB]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   hostdb = conn['host']
   hostdb.drop()
   valuesdb = conn['values']

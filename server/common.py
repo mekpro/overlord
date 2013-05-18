@@ -1,7 +1,15 @@
-#put common configuration used by server and scheduler here
-MEMCACHE_SERVER = 'localhost:11211'
-IPERF_INTERVAL = 60
-LISTEN_INTERVAL = 15
+import datetime
+from pymongo import MongoClient
+import pymongo
+import logging
+import random
+import config
 
-MONGO_SERVER = 'localhost'
-MONGO_DB = 'overlord'
+def load_hostlist():
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  hostlist = list()
+  for host in conn.host.find():
+    hostlist.append(host["hostname"])
+  return hostlist
+
+

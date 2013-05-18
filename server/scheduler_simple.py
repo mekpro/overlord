@@ -1,16 +1,15 @@
 import datetime
+from pymongo import MongoClient
 import pymongo
 import logging
 import random
-
-MEMCACHE_SERVER = 'localhost:11211'
-IPERF_INTERVAL = 60
-LISTEN_INTERVAL = 15
+import config
 
 def load_hostlist():
-  hostlist = [
-    'localhost',
-  ]
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  hostlist = list()
+  for host in conn.host.find():
+    hostlist.append(host["hostname"])
   return hostlist
 
 def initialize():
