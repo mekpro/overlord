@@ -75,9 +75,9 @@
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <li class="nav-header">Hostlist</li>
-              <li class="active"><a href="#">Overview</a></li>
-              %for hostname in hostlist: 
-                <li><a href="#">{{hostname}}</a></li>
+              <li class="active"><a href="/">Overview</a></li>
+              %for h in hostlist:
+               <li><a href="/host?hostname={{h}}">{{h}}</a></li>
               %end
             </ul>
           </div><!--/.well -->

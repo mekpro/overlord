@@ -27,14 +27,14 @@ def index():
 
 @route('/host')
 def host():
-  hostname = request.get("hostname")
-  hostname = "c0"
+  hostname = request.GET["hostname"]
+  logging.error("hostname from GET: %s" %hostname)
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
   ping_table = query.host_tables(hostname, metric='ping')
   iperf_table = query.host_tables(hostname, metric='iperf')
   logging.error(ping_table)
-  return template('host_template', hostname=hostname, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
+  return template('host_template', hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
 
 if __name__ == '__main__':
   run (host='0.0.0.0', port=8082, debug=True,reloader=True)
