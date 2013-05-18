@@ -61,8 +61,8 @@ if __name__ == '__main__':
   daemon = Agent(config.PID_FILE)
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
-      daemon.run()
-      #daemon.start()
+      #daemon.run()
+      daemon.start()
     elif 'stop' == sys.argv[1]:
       daemon.stop()
     elif 'restart' == sys.argv[1]:
