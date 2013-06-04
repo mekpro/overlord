@@ -18,15 +18,27 @@ def route_root():
   bottle.redirect("/index")
 
 @route('/index')
-def index():
+def index_view():
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
   graph = json.dumps(query.graph())
   logging.error(graph)
   return template('index_template', graph=graph, hostlist=hostlist, last_update=last_update)
 
+@route('/chordgraph')
+def chordgraph_view():
+  return template('chordgraph_template')
+
+@route('/calendar')
+def calendar_view():
+  return template('calendar_template')
+
+@route('/heatmap/daily')
+def heatmap_daily_view():
+  return template('heatmap_template')
+
 @route('/host')
-def host():
+def host_view():
   hostname = request.GET["hostname"]
   logging.error("hostname from GET: %s" %hostname)
   last_update = datetime.datetime.now()

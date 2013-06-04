@@ -20,17 +20,18 @@ def create_hosts(hosts):
 def create_values(value_type, values, count=1, time_step=60):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   start_dt = datetime.datetime.now() - datetime.timedelta(count*time_step)
-  hosts_i = conn['host'].find()
-  hosts_j = conn['host'].find()
+  hosts_i = list(conn['host'].find())
+  hosts_j = list(conn['host'].find())
   for i in hosts_i:
     for j in hosts_j:
       if i["hostname"] != j["hostname"]:
         for k in range(0,count):
           row = dict()
-          row["type"] = ["type"]
+          row["type"] = value_type
           row["src"] = i["hostname"]
           row["dest"] = j["hostname"]
-          row['values'] = values
+          for k1,v1 in values.items():
+            row[k1] = v1
           row["dt"] = start_dt + datetime.timedelta(seconds=k*time_step)
           conn['values'].insert(row)
 
@@ -39,6 +40,7 @@ if __name__ == '__main__':
   ping_values = {'min': 0.42, 'max': 1.23, 'avg': 0.56, 'mdev': 0.04}
   iperf_values = {'bandwidth': 1234567}
   hosts = ['fe','c0','c1','c2']
+  count = 1
 
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   cleardb()
@@ -46,9 +48,9 @@ if __name__ == '__main__':
 
   create_hosts(hosts)
   print "hosts count: %d" %conn['host'].count()
-  create_values('ping', ping_values, 20)
+  create_values('ping', ping_values, count)
   print "values count: %d" %conn['values'].count()
-  create_values('iperf', iperf_values, 20)
+  create_values('iperf', iperf_values, count)
   print "values count: %d" %conn['values'].count()
  
   hostlist = query.hostlist()
