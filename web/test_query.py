@@ -3,6 +3,7 @@ import datetime
 import logging
 import config
 import query
+import random
 
 def cleardb():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
@@ -35,12 +36,11 @@ def create_values(value_type, values, count=1, time_step=60):
           row["dt"] = start_dt + datetime.timedelta(seconds=k*time_step)
           conn['values'].insert(row)
 
-
 if __name__ == '__main__':
   ping_values = {'min': 0.42, 'max': 1.23, 'avg': 0.56, 'mdev': 0.04}
   iperf_values = {'bandwidth': 1234567}
-  hosts = ['fe','c0','c1','c2']
-  count = 1
+  hosts = ['fe','c0','c1','c2', 'c3', 'c4', 'c5']
+  count = 5
 
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   cleardb()

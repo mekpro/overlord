@@ -34,7 +34,7 @@
     <script language=javascript>
       var json = {{!graph}}
     </script>
-    <script language="javascript" type="text/javascript" src="/assets/Jit/Examples/ForceDirected/example1.js"></script>
+    <script language="javascript" type="text/javascript" src="/assets/edited/force_directed.js"></script>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
