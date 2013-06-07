@@ -31,32 +31,36 @@ class Agent(Daemon):
     request["results"] = []
     while True:
       logger.info('connecting to %s with %s' %(config.SERVER, json.dumps(request)))
-      response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
-      request["results"] = []
-      logger.info('response: %s' %(response.json()))
-      response = response.json()
-      jobs = response["jobs"]
-      if len(jobs) == 0:
-        logger.info('Sleeping ...')
-        time.sleep(config.INTERVAL)
-      else:
-        for job in jobs:
-          result = dict()
-          result['src'] = config.AGENT_HOSTNAME
-          result['dest'] = job["hostname"]
-          if job['type'] == 'iperf':
-            result['type'] = 'iperf'
-            tmp = iperfshell.run_iperf(job["hostname"])
-            values = iperfshell.parse_iperf(tmp)
-          elif job['type'] == 'ping':
-            result['type'] = 'ping'
-            tmp = pingshell.run_ping(job["hostname"])
-            values = pingshell.parse_ping(tmp)
-          else:
-            values = {}
-          for k,v in values.iteritems():
-            result[k] = v
-          request["results"].append(result)
+      try:
+        response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
+        request["results"] = []
+        logger.info('response: %s' %(response.json()))
+        response = response.json()
+        jobs = response["jobs"]
+        if len(jobs) == 0:
+          logger.info('Sleeping ...')
+          time.sleep(config.INTERVAL)
+        else:
+          for job in jobs:
+            result = dict()
+            result['src'] = config.AGENT_HOSTNAME
+            result['dest'] = job["hostname"]
+            if job['type'] == 'iperf':
+              result['type'] = 'iperf'
+              tmp = iperfshell.run_iperf(job["hostname"])
+              values = iperfshell.parse_iperf(tmp)
+            elif job['type'] == 'ping':
+              result['type'] = 'ping'
+              tmp = pingshell.run_ping(job["hostname"])
+              values = pingshell.parse_ping(tmp)
+            else:
+              values = {}
+            for k,v in values.iteritems():
+              result[k] = v
+            request["results"].append(result)
+      except (Timeout):
+        logging.error("Connection to "+config.SERVER+" timeout")
+ 
 
 if __name__ == '__main__':
   daemon = Agent(config.PID_FILE)
