@@ -6,7 +6,7 @@ import logging
 
 import common
 import config
-import scheduler_simple as scheduler
+import scheduler_timetable as scheduler
 
 def authen(hostname, authkey):
   return True
