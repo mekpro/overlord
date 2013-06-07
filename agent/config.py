@@ -1,6 +1,6 @@
 #config file for overlord agent
 
-AGENT_HOSTNAME = "hostnamehere"
+AGENT_HOSTNAME = "fe"
 AGENT_AUTHKEY = "none"
 SERVER = "http://fe:8081/listen"
 INTERVAL = 15
