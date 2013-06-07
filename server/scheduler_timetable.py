@@ -15,10 +15,10 @@ def gen_timetable():
   for host1 in hostlist:
     for host2 in hostlist:
       timetable.append({
-        'src': host1, 
-    	  'dest': host2, 
+        'src': host1,
+    	  'dest': host2,
         'type': 'iperf',
-        'hour': dt.hour, 
+        'hour': dt.hour,
         'minute': dt.minute
        })
       dt += datetime.timedelta(minutes=1)

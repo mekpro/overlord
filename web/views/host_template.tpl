@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bootstrap, from Twitter</title>
+    <title>Network Status: {{hostname}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -34,15 +34,9 @@
       <script src="../assets/js/html5shiv.js"></script>
     <![endif]-->
 
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
   </head>
-
   <body>
+
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -52,15 +46,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">Project name</a>
+          <a class="brand" href="#">Network Status</a>
           <div class="nav-collapse collapse">
-            <p class="navbar-text pull-right">
-              Logged in as <a href="#" class="navbar-link">Username</a>
-            </p>
-            <ul class="nav">
+           <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -84,7 +73,7 @@
           <div class="hero-unit">
             <h1>{{hostname}}</h1>
             <p>Hostinfo</p>
-            <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+            <p><a href="#" class="btn btn-primary btn-large">&laquo Refresh &raquo;</a></p>
           </div>
           <div>
             <h2>Ping Table</h2>
@@ -99,7 +88,7 @@
               %for row in ping_table:
               <tr>
                 <td>{{row["dest"]}}</td>
-                <td>{{row["dt"]}}</td>
+                <td>{{row["dt"].strftime("%H:%M:%S")}}</td>
                 <td>{{row["min"]}}</td>
                 <td>{{row["max"]}}</td>
                 <td>{{row["avg"]}}</td>
@@ -114,19 +103,23 @@
               <tr>
                 <th>Destination</th>
                 <th>Last Update</th>
-                <th>bandwidth</th>
+                <th>Bandwidth (MB/s)</th>
               </tr>
               %for row in iperf_table: 
               <tr>
                 <td>{{row["dest"]}}</td>
-                <td>{{row["dt"]}}</td>
-                <td>{{row["bandwidth"]}}</td>
+                <td>{{row["dt"].strftime("%H:%M:%S")}}</td>
+                <td>{{round(row["bandwidth"]/1048576.0, 3)}}</td>
               </tr>
               %end
             </table>
- 
+
               </tr>
             </table>
+          </div>
+          <div>
+            <h2>Network Utilization</h2>
+
           </div>
           </div><!--/row-->
         </div><!--/span-->
@@ -135,7 +128,7 @@
       <hr>
 
       <footer>
-        <p>&copy; Company 2013</p>
+        <p>Network Monitoring: Web UI (mekpro@gmail.com)</p>
       </footer>
 
     </div><!--/.fluid-container-->

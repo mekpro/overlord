@@ -41,12 +41,6 @@
       <script src="../assets/js/html5shiv.js"></script>
     <![endif]-->
 
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
   </head>
 
   <body onload="init();">
@@ -86,49 +80,29 @@
         <div class="span9">
           <div class="hero-unit">
             <div id="infovis"></div>
+            <div id="log"></div>
           </div>
-          <div>
-          </div>
-
-          <div class="row-fluid">
-            <div class="span4">
-              <h2>Heading</h2>
-             <div id="inner-details"></div> 
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <div id="log"></div>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-          </div><!--/row-->
-          <div class="row-fluid">
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-          </div><!--/row-->
+          %i=0
+          %for h in hostlist:
+            %if i%3 == 0:
+              <div class="row-fluid">
+            %end
+              <div class="span4">
+                <h2>{{h}}</h2>
+                <p>{{h}} information</p>
+                <a class="btn" href="#">View details &raquo;</a>
+              </div><!--/span-->
+            %if i%3 == 2:
+              </div>
+            %end
+            %i = i+1
+          %end
         </div><!--/span-->
-      </div><!--/row-->
 
       <hr>
 
       <footer>
-        <p>&copy; Company 2013</p>
+        <p>Network Monitoring: Web UI (mekpro@gmail.com)</p>
       </footer>
 
     </div><!--/.fluid-container-->
