@@ -16,7 +16,7 @@ def gen_timetable():
     for host2 in hostlist:
       timetable.append({
         'src': host1,
-    	  'dest': host2,
+        'dest': host2,
         'type': 'iperf',
         'hour': dt.hour,
         'minute': dt.minute
@@ -42,9 +42,9 @@ def getJobForHost(src_hostname):
   hostlist = common.load_hostlist()
   dt = datetime.datetime.now()
   for row in timetable:
-    if (src_hostname == row['src']): 
-  	  if (row['hour'] == dt.hour) and (row['minute'] == dt.minute):
-  	    result.append({'type': row['type'], 'hostname': row['dest']})
+    if (src_hostname == row['src']):
+      if (row['hour'] == dt.hour) and (row['minute'] == dt.minute):
+        result.append({'type': row['type'], 'hostname': row['dest']})
   return result
 
 
