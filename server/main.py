@@ -22,9 +22,9 @@ def record_values(src_hostname, values):
     row["dest"] = r["dest"]
     row["type"] = r["type"]
     if row["type"] == 'ping':
-      row["min"] = int(r["min"])
-      row["max"] = int(r["max"])
-      row["avg"] = int(r["avg"])
+      row["min"] = r["min"] * 1000
+      row["max"] = r["max"] * 1000
+      row["avg"] = r["avg"] * 1000
       db_value.insert(row)
       logging.error("recording : %s" %str(row))
     elif row["type"] == 'iperf':

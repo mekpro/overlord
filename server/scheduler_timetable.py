@@ -21,6 +21,13 @@ def gen_timetable():
         'hour': dt.hour,
         'minute': dt.minute
        })
+      timetable.append({
+        'src': host1,
+    	  'dest': host2,
+        'type': 'ping',
+        'hour': dt.hour,
+        'minute': dt.minute
+       })
       dt += datetime.timedelta(minutes=1)
   return timetable
 
