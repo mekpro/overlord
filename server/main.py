@@ -25,14 +25,15 @@ def record_values(src_hostname, values):
       row["min"] = r["min"] * 1000
       row["max"] = r["max"] * 1000
       row["avg"] = r["avg"] * 1000
-      db_value.insert(row)
-      logging.error("recording : %s" %str(row))
     elif row["type"] == 'iperf':
       row["bandwidth"] = int(r["bandwidth"])
-      db_value.insert(row)
-      logging.error("recording : %s" %str(row))
     else:
       logging.error("invalid value type: %s" %srow["type"])
+      return False
+
+    db_value.insert(row)
+    logging.error("recording : %s" %str(row))
+
 
 def record_state(hostname, state):
   logging.error("host %s state %s" %(hostname,state))
