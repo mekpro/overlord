@@ -20,28 +20,3 @@ The target host will need Python runtime to run the components. These components
 - Agent: ping and iperf installed, requests library
 
 
-Server Installation
-==============
-config files
-
-
-Web Installation 
-============
-config files
-
-Agent Installation
-==========
-
-Agent node need ping and Iperf installed.
-config files
-
-
-Working Details
-==========
-
-Scheduling mechanism can be selected from the 3 of following:
-
-1. Random -
-2. Time Table -
-3. Idle Host -
-

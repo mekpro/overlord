@@ -48,5 +48,27 @@ def host_view():
   logging.error(ping_table)
   return template('host_template', hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
 
+@route('/api')
+def api_view():
+  action = request.GET["action"]
+  if action == 'hostList':
+    result = query.hostlist()
+  elif action == 'hostsInfo':
+    result = [
+      {'hostname': 'host1' , 'status': 'idle', 'last_update': datetime.datetime.now()}
+      {'hostname': 'host2' , 'status': 'busy', 'last_update': datetime.datetime.now()}
+      {'hostname': 'host3' , 'status': 'down', 'last_update': datetime.datetime.now()}
+      ]
+
+  elif action == 'queryGraph':
+    result =
+
+  elif action == 'queryValues':
+
+  else:
+    logging.error('Invalid api action: %s' %action)
+    result = ''
+  return json.dumps(result)
+
 if __name__ == '__main__':
   run (host='0.0.0.0', port=8082, debug=True,reloader=True)
