@@ -1,43 +1,57 @@
 import datetime
-import pymongo
 import logging
+from pymongo import MongoClient
 
-MEMCACHE_SERVER = 'localhost:11211'
-IPERF_INTERVAL = 60
-LISTEN_INTERVAL =
+import init_test_data
+import config
 
-def load_hostlist():
-  hostlist = mc.get('hostlist')
-  if hostlist is None:
-    hostlist = [
-    '192.168.1.100',
-    '192.168.1.101',
-    '192.168.1.102',
-    '192.168.1.103',
-    '192.168.1.104',
-    ]
-    mc.set('hostlist', hostlist)
-  return hostlist
+IPERF_INTERVAL = datetime.timedelta(minutes=0)
+PING_INTERVAL = datetime.timedelta(minutes=1)
+
+def select_host(hostname):
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  host = conn['host'].find_one({'hostname': hostname})
+  return host
 
 def initialize():
-  mc = memcache.Client(MEMCACHE_SERVER, debug=0)
-  hostlist = load_hostlist()
-  mc.set('hostlist', hostlist)
-  for i in hostlist:
-    for j in hostlist:
-      mc.set("last_" + i + j, datetime.datetime.now())
-      mc.set("status_" + i + j, "busy")
+  pass
 
+def getJobForHost(src_hostname, iperf_dt):
+  jobs = []
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  src_host = select_host(src_hostname)
+  query = conn['flow'].find({
+    'src' : src_hostname,
+    'last_iperf_dt': {"$lt" : iperf_dt}
+  })
+  flows = query.sort('last_iperf_dt',1)
+  logging.error("flows count: %d" %flows.count())
+  for flow in flows:
+    dest_host = select_host(flow['dest'])
+    logging.error(dest_host)
+    if dest_host['status'] == 'idle':
+      jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
+      src_host['status'] = 'busy'
+      conn['host'].update({"_id": src_host["_id"]}, src_host)
+      dest_host['status'] = 'busy'
+      conn['host'].update({"_id": dest_host["_id"]}, dest_host)
+    else:
+      logging.error('destination busy %s' %str(dest_host))
 
-def getScheduledHost(host_i):
-  hostlist = load_hostlist()
-  scheduled_hosts = []
-  last_update = datetime.datetime.now()
-  for host_j in hostlist:
-    if host_j != host_i:
-      last_j = mc.get('last_' + host_i + host_j)
-      update_time = datetime.datetime.now() - datetime.datediff(seconds=15)
-      if last_j < update_time:
-        scheduled_hosts.append(host_j)
-  return scheduled_hosts
+  return jobs
 
+if __name__ == '__main__':
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  init_test_data.init_test_data()
+#  iperf_dt = datetime.datetime.now() - IPERF_INTERVAL
+  iperf_dt = datetime.datetime(2010, 1,1, 0,0,0)
+  jobs = getJobForHost('fe', iperf_dt)
+  print jobs
+  # tester: next job should equal to busy and self 
+  busy_count = conn['host'].find({'status': 'busy'}).count()
+  if busy_count != len(jobs) + 1:
+    print "error busy = %d , jobs = %d" %(busy_count, len(jobs))
+  # tester: next job should equal number of flow and self
+  flow_count = conn['flow'].find({'src': 'fe'}).count()
+  if flow_count != len(jobs) + 1:
+    print "error flow_count = %d , jobs = %d" %(flow_count, len(jobs))
