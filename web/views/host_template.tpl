@@ -72,8 +72,9 @@
         <div class="span9">
           <div class="hero-unit">
             <h1>{{hostname}}</h1>
-            <p>Hostinfo</p>
-            <p><a href="#" class="btn btn-primary btn-large">&laquo Refresh &raquo;</a></p>
+            <p>Hostinfo
+            <a href="/host?hostname={{hostname}}" class="btn btn-primary btn-large">&laquo Refresh &raquo;</a>
+            </p>
           </div>
           <div>
             <h2>Ping Table</h2>

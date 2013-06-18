@@ -60,6 +60,7 @@ class Agent(Daemon):
             request["results"].append(result)
       except (Timeout):
         logging.error("Connection to "+config.SERVER+" timeout")
+        time.sleep(config.INTERVAL)
  
 
 if __name__ == '__main__':
