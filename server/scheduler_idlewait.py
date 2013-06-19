@@ -5,9 +5,6 @@ from pymongo import MongoClient
 import init_test_data
 import config
 
-IPERF_INTERVAL = datetime.timedelta(minutes=0)
-PING_INTERVAL = datetime.timedelta(minutes=1)
-
 def select_host(hostname):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   host = conn['host'].find_one({'hostname': hostname})
@@ -16,16 +13,20 @@ def select_host(hostname):
 def initialize():
   pass
 
-def getJobForHost(src_hostname, iperf_dt):
+
+def getJobForHost(src_hostname, dt):
   jobs = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  ping_dt = dt - config.PING_INTERVAL
+  iperf_dt = dt - config.IPERF_INTERVAL
   src_host = select_host(src_hostname)
+
   query = conn['flow'].find({
     'src' : src_hostname,
     'last_iperf_dt': {"$lt" : iperf_dt}
   })
   flows = query.sort('last_iperf_dt',1)
-  logging.error("flows count: %d" %flows.count())
+  # Do only one iperf to made the whole system work concurrent
   for flow in flows:
     dest_host = select_host(flow['dest'])
     logging.error(dest_host)
@@ -35,8 +36,20 @@ def getJobForHost(src_hostname, iperf_dt):
       conn['host'].update({"_id": src_host["_id"]}, src_host)
       dest_host['status'] = 'busy'
       conn['host'].update({"_id": dest_host["_id"]}, dest_host)
-    else:
-      logging.error('destination busy %s' %str(dest_host))
+      break;
+
+  query = conn['flow'].find({
+    'src' : src_hostname,
+    'last_ping_dt': {"$lt" : ping_dt}
+  })
+  flows = query.sort('last_ping_dt',1)
+  # Ping does not toggle host status to busy, but need to be done when idle
+  # Src host busy is okay since it will complete iperf first btw
+  for flow in flows:
+    dest_host = select_host(flow['dest'])
+    logging.error(dest_host)
+    if dest_host['status'] == 'idle':
+      jobs.append({'type':'ping','hostname': dest_host["hostname"]})
 
   return jobs
 
@@ -44,14 +57,10 @@ if __name__ == '__main__':
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   init_test_data.init_test_data()
 #  iperf_dt = datetime.datetime.now() - IPERF_INTERVAL
-  iperf_dt = datetime.datetime(2010, 1,1, 0,0,0)
-  jobs = getJobForHost('fe', iperf_dt)
+  dt = datetime.datetime(2013, 1,1, 0,0,0)
+  jobs = getJobForHost('fe', dt)
   print jobs
-  # tester: next job should equal to busy and self 
+  # tester: busy=2 
   busy_count = conn['host'].find({'status': 'busy'}).count()
-  if busy_count != len(jobs) + 1:
-    print "error busy = %d , jobs = %d" %(busy_count, len(jobs))
-  # tester: next job should equal number of flow and self
-  flow_count = conn['flow'].find({'src': 'fe'}).count()
-  if flow_count != len(jobs) + 1:
-    print "error flow_count = %d , jobs = %d" %(flow_count, len(jobs))
+  if busy_count != 2:
+    print "error busy != 2 , =%d" %busy_count
