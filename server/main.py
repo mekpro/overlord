@@ -11,6 +11,12 @@ import scheduler_idlewait as scheduler
 def authen(hostname, authkey):
   return True
 
+def change_host_status(hostname, status):
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  host = conn.host.find_one({'hostname': hostname})
+  host['status'] = 'idle'
+  conn.host.update({'_id':host['_id']}, host)
+
 def record_values(src_hostname, values, dt):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   logging.error("values : %s" %str(values))
@@ -52,6 +58,7 @@ def index(hostname=0):
   if not authen(d["hostname"], d["authkey"]):
     return {'error': 'authenticate fail'}
   dt = datetime.datetime.now()
+  change_host_status(d["hostname"], "idle")
   record_values(d["hostname"], d["results"], dt)
   jobs = scheduler.getJobForHost(d["hostname"], dt)
   result = dict()

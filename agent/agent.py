@@ -38,10 +38,11 @@ class Agent(Daemon):
         response = response.json()
         jobs = response["jobs"]
         if len(jobs) == 0:
-          logger.info('Sleeping ...')
+          logger.error('Sleeping ...')
           time.sleep(config.INTERVAL)
         else:
           for job in jobs:
+            logger.error('Working with %s', str(job))
             result = dict()
             result['src'] = config.AGENT_HOSTNAME
             result['dest'] = job["hostname"]
@@ -67,8 +68,9 @@ if __name__ == '__main__':
   daemon = Agent(config.PID_FILE)
   if len(sys.argv) == 2:
     if 'start' == sys.argv[1]:
-      #daemon.run()
       daemon.start()
+    elif 'run' == sys.argv[1]:
+      daemon.run()
     elif 'stop' == sys.argv[1]:
       daemon.stop()
     elif 'restart' == sys.argv[1]:
