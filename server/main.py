@@ -6,7 +6,7 @@ import logging
 
 import common
 import config
-import scheduler_timetable as scheduler
+import scheduler_idlewait as scheduler
 
 def authen(hostname, authkey):
   return True
@@ -14,8 +14,9 @@ def authen(hostname, authkey):
 def record_values(src_hostname, values, dt):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   logging.error("values : %s" %str(values))
+  src_host = conn.host.find_one({'hostname': src_hostname})
   for r in values:
-    flow_query = {'src_host': src_hostname, 'dest_host': r["dest"]}
+    flow_query = {'src': src_hostname, 'dest': r["dest"]}
     flow = conn.flow.find_one(flow_query)
     row = dict()
     row["src"] = src_hostname
@@ -33,11 +34,16 @@ def record_values(src_hostname, values, dt):
     else:
       logging.error("invalid value type: %s" %srow["type"])
       return False
+    conn.flow.update({'_id': flow["_id"]}, flow)
 
     conn.values.insert(row)
     logging.error("recording : %s" %str(row))
-    conn.flow.update(flow)
+    conn.flow.update({'_id': flow["_id"]}, flow)
     logging.error("updating flow time: %s" %str(flow))
+
+  src_host["status"] = 'idle'
+  conn.host.update({'_id':src_host["_id"]}, src_host)
+ 
 
 @post('/listen')
 def index(hostname=0):
@@ -47,7 +53,7 @@ def index(hostname=0):
     return {'error': 'authenticate fail'}
   dt = datetime.datetime.now()
   record_values(d["hostname"], d["results"], dt)
-  jobs = scheduler.getJobForHost(d["hostname"])
+  jobs = scheduler.getJobForHost(d["hostname"], dt)
   result = dict()
   result['jobs'] = jobs
   logging.error(str(result))
