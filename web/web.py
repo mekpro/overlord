@@ -55,15 +55,16 @@ def api_view():
     result = query.hostlist()
   elif action == 'hostsInfo':
     result = [
-      {'hostname': 'host1' , 'status': 'idle', 'last_update': datetime.datetime.now()}
-      {'hostname': 'host2' , 'status': 'busy', 'last_update': datetime.datetime.now()}
+      {'hostname': 'host1' , 'status': 'idle', 'last_update': datetime.datetime.now()},
+      {'hostname': 'host2' , 'status': 'busy', 'last_update': datetime.datetime.now()},
       {'hostname': 'host3' , 'status': 'down', 'last_update': datetime.datetime.now()}
-      ]
+    ]
 
   elif action == 'queryGraph':
-    result =
+    pass
 
   elif action == 'queryValues':
+    pass
 
   else:
     logging.error('Invalid api action: %s' %action)
