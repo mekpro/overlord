@@ -21,7 +21,7 @@ def route_root():
 def index_view():
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
-  graph = json.dumps(query.graph())
+  graph = json.dumps(query.graph_force())
   logging.error(graph)
   return template('index_template', graph=graph, hostlist=hostlist, last_update=last_update)
 
@@ -72,4 +72,4 @@ def api_view():
   return json.dumps(result)
 
 if __name__ == '__main__':
-  run (host='0.0.0.0', port=8082, debug=True,reloader=True)
+  run (host='1.0.0.0', port=8082, debug=True,reloader=True)

@@ -28,7 +28,36 @@ def host_tables(hostname, metric="ping", dt=None):
         table.append({'dest': dest_host['hostname'], 'dt': value["dt"] ,'bandwidth':value["bandwidth"]})
   return table
 
-def graph():
+def host_query(src_hostname, module, metric, count, dt_start, dt_end):
+  result = dict()
+  results = []
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  query = {
+    'src' : src_hostname,
+    'type' : module,
+    'dt' : { '$gt' : dt_start, '$lte': dt_end },
+  }
+  rows = conn['values'].find(query)
+  logging.error("graph query filtered %d row" %rows.count())
+  for row in rows:
+    r = dict()
+    r["dt"] = r["dt"]
+    r["key"] = r["dest"]
+    r["value"] = r["metric"]
+    results.append(r)
+
+  result["module"] = module
+  result["metric"] = metric
+  result["results"] = results
+  return results
+
+def graph_query(module, metric, count, dt_start, dt_end):
+  result = dict()
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  pass
+
+
+def graph_force():
   graph = list()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   for hostname in hostlist():
@@ -54,8 +83,7 @@ def graph():
 
   return graph
 
-
-def graph_ref():
+def graph_force_ref():
   graph = list()
   fe = { "adjacencies": [
               "fe", {
