@@ -51,12 +51,13 @@ def host_tables(hostname, metric="ping", dt=None):
   dest_hosts = conn.host.find()
   for dest_host in dest_hosts:
     query = {'src': src_host['hostname'], 'dest': dest_host['hostname'], 'type':metric}
-    value = conn["values"].find_one(query)
-    if value is not None:
+    value = conn["values"].find(query).sort([('dt',-1)])
+    if value.count() > 0:
+      v = value[0]
       if metric == 'ping':
-        table.append({'dest': dest_host['hostname'], 'dt': value["dt"] ,'min': value["min"], 'max': value["max"], 'avg': value["avg"]})
+        table.append({'dest': dest_host['hostname'], 'dt': v["dt"] ,'min': v["min"], 'max': v["max"], 'avg': v["avg"]})
       elif metric == 'iperf':
-        table.append({'dest': dest_host['hostname'], 'dt': value["dt"] ,'bandwidth':value["bandwidth"]})
+        table.append({'dest': dest_host['hostname'], 'dt': v["dt"] ,'bandwidth':v["bandwidth"]})
   return table
 
 def host_query(src_hostname, module, metric, count, dt_start, dt_end):
