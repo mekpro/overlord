@@ -37,10 +37,7 @@ def host_tables(hostname, metric="ping", dt=None):
   return table
 
 def host_query(src_hostname, module, metric, count, dt_start, dt_end):
-  result = dict()
-  result["module"] = module
-  result["metric"] = metric
-  results = []
+  result = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   query = {
     'src' : src_hostname,
@@ -54,19 +51,17 @@ def host_query(src_hostname, module, metric, count, dt_start, dt_end):
     r["dt"] = row["dt"]
     r["key"] = row["dest"]
     r["value"] = row[metric]
-    results.append(r)
-
-  result["results"] = results
-  return results
+    result.append(r)
+  return result
 
 def graph_query(module, metric, count, dt_start, dt_end):
   result = dict()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   hosts = hostlist()
-  for host in hosts:
-    results = host_query(host, module, metric, count, dt_start, dt_end)
-    result
-
+  for src_host in hosts:
+    results = host_query(src_host, module, metric, count, dt_start, dt_end)
+    result[src_host] = results
+  return result
 
 def graph_force():
   graph = list()
@@ -151,6 +146,6 @@ if __name__ == '__main__':
   print hostlist()
   print host_tables('fe', 'iperf', dt_start)
   print host_query('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
-  print graph_query('iperf', 'bandwidth', 10, dt_start, dt_end)
+  print graph_query('iperf', 'bandwidth', 5, dt_start, dt_end)
 #  print graph_force()
 
