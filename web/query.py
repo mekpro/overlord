@@ -6,17 +6,40 @@ import config
 
 def hostlist():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
-  hostlist = []
+  result = []
   for host in conn.host.find():
-    hostlist.append(host["hostname"])
-  return hostlist
+    result.append(host["hostname"])
+  return result
+
+def hoststats():
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  result = []
+  for host in conn.host.find():
+    r = dict()
+    r["hostname"] = host["hostname"]
+    r["status"] = host["status"]
+    result.append(r)
+  return result
 
 def flowlist(hostname):
   result = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
-  flows = conn.flow.find({'src' : src_host})
-  for r in flows:
-    result.append(r["dest"])
+  flows = conn.flow.find({'src' : hostname})
+  for flow in flows:
+    result.append(flow["dest"])
+  return result
+
+def flowstats(hostname):
+  result = []
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  flows = conn.flow.find({'src' : hostname})
+  for flow in flows:
+    r = dict()
+    r["src"] = flow["src"]
+    r["dest"] = flow["dest"]
+    r["last_iperf_dt"] = str(flow["last_iperf_dt"])
+    r["last_ping_dt"] = str(flow["last_ping_dt"])
+    result.append(r)
   return result
 
 def host_tables(hostname, metric="ping", dt=None):
@@ -48,7 +71,7 @@ def host_query(src_hostname, module, metric, count, dt_start, dt_end):
   print rows.count()
   for row in rows:
     r = dict()
-    r["dt"] = row["dt"]
+    r["dt"] = str(row["dt"])
     r["key"] = row["dest"]
     r["value"] = row[metric]
     result.append(r)
