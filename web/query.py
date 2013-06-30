@@ -11,6 +11,14 @@ def hostlist():
     hostlist.append(host["hostname"])
   return hostlist
 
+def flowlist(hostname):
+  result = []
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  flows = conn.flow.find({'src' : src_host})
+  for r in flows:
+    result.append(r["dest"])
+  return result
+
 def host_tables(hostname, metric="ping", dt=None):
   table = list()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
@@ -30,6 +38,8 @@ def host_tables(hostname, metric="ping", dt=None):
 
 def host_query(src_hostname, module, metric, count, dt_start, dt_end):
   result = dict()
+  result["module"] = module
+  result["metric"] = metric
   results = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   query = {
@@ -38,23 +48,24 @@ def host_query(src_hostname, module, metric, count, dt_start, dt_end):
     'dt' : { '$gt' : dt_start, '$lte': dt_end },
   }
   rows = conn['values'].find(query)
-  logging.error("graph query filtered %d row" %rows.count())
+  print rows.count()
   for row in rows:
     r = dict()
-    r["dt"] = r["dt"]
-    r["key"] = r["dest"]
-    r["value"] = r["metric"]
+    r["dt"] = row["dt"]
+    r["key"] = row["dest"]
+    r["value"] = row[metric]
     results.append(r)
 
-  result["module"] = module
-  result["metric"] = metric
   result["results"] = results
   return results
 
 def graph_query(module, metric, count, dt_start, dt_end):
   result = dict()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
-  pass
+  hosts = hostlist()
+  for host in hosts:
+    results = host_query(host, module, metric, count, dt_start, dt_end)
+    result
 
 
 def graph_force():
@@ -132,3 +143,14 @@ def graph_force_ref():
   graph.append(c0)
   graph.append(c1)
   return graph
+
+if __name__ == '__main__':
+  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=10)
+  dt_end = datetime.datetime.now()
+
+  print hostlist()
+  print host_tables('fe', 'iperf', dt_start)
+  print host_query('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
+  print graph_query('iperf', 'bandwidth', 10, dt_start, dt_end)
+#  print graph_force()
+
