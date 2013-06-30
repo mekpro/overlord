@@ -23,7 +23,7 @@ def index_view():
   hostlist = query.hostlist()
   graph = json.dumps(query.graph_force())
   logging.error(graph)
-  return template('index_template', graph=graph, hostlist=hostlist, last_update=last_update)
+  return template('index_template', title="Overlord Monitoring" ,graph=graph, hostlist=hostlist, last_update=last_update)
 
 @route('/chordgraph')
 def chordgraph_view():
@@ -46,7 +46,7 @@ def host_view():
   ping_table = query.host_tables(hostname, metric='ping')
   iperf_table = query.host_tables(hostname, metric='iperf')
   logging.error(ping_table)
-  return template('host_template', hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
+  return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
 
 @route('/api')
 def api_view():
@@ -72,4 +72,4 @@ def api_view():
   return json.dumps(result)
 
 if __name__ == '__main__':
-  run (host='1.0.0.0', port=8082, debug=True,reloader=True)
+  run (host='0.0.0.0', port=8082, debug=True,reloader=True)
