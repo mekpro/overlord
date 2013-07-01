@@ -74,7 +74,7 @@ def api_flowstats(hostname):
 
 @route('/api/query/graph/<module>/<metric>')
 def api_query_graph(module,metric):
-  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=10)
+  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=5)
   dt_end = datetime.datetime.now()
   count = 5 
   graph = query.graph_query(module, metric, count, dt_start, dt_end)
