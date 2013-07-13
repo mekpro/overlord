@@ -34,22 +34,23 @@ nv.addGraph(function() {
         .tickFormat(d3.format(',f'));
 
     chart.y2Axis
-        .tickFormat(function(d) { return '$' + d3.format(',f')(d) });
+        .tickFormat(function(d) { return d3.format(',f')(d) + 'bps'});
 
     chart.bars.forceY([0]);
     //chart.lines.forceY([0]);
-    d3.json('/api/query/host/fe/iperf/bandwidth', function (data) {
+    d3.json('/api/query/host/{{hostname}}/iperf/bandwidth', function (data) {
       console.log(data['result']['c0']) ;
+      bwdatum = []
+      for (var k in data['result']) {
+        d = {
+          "key" : k,
+          "values" : data['result'][k]
+          };
+        bwdatum.push(d);
+      }
+
       d3.select('#line_graph svg')
-          .datum( [{
-              "key" : "c0",
-              "bar": true,
-              "values" : data['result']['c0']
-              },{
-              "key" : "c1",
-              "values": data['result']['c1']
-              }]
-              .map(function(series) {
+          .datum(bwdatum.map(function(series) {
             series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
             return series;}))
       .transition().duration(500).call(chart);
