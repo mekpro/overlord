@@ -33,6 +33,12 @@
     <!--[if lt IE 9]>
       <script src="../assets/js/html5shiv.js"></script>
     <![endif]-->
+  
+  <link href="../assets/nvd3/nv.d3.css" rel="stylesheet">
+
+  <script src="../assets/nvd3/lib/d3.v2.js"></script>
+  <script src="../assets/nvd3/lib/fisheye.js"></script>
+  <script src="../assets/nvd3/nv.d3.js"></script>
 
   </head>
   <body onload="init();">

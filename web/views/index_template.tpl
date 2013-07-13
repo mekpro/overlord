@@ -30,7 +30,7 @@
       <div class="span4">
         <h2>{{h}}</h2>
         <p>{{h}} information</p>
-        <a class="btn" href="#">View details &raquo;</a>
+        <a class="btn" href="/host?hostname={{h}}">View details &raquo;</a>
       </div><!--/span-->
     %if i%3 == 2:
       </div>

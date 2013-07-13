@@ -2,7 +2,6 @@ import datetime
 import logging
 from pymongo import MongoClient
 
-import init_test_data
 import config
 
 def select_host(hostname):
@@ -12,7 +11,6 @@ def select_host(hostname):
 
 def initialize():
   pass
-
 
 def getJobForHost(src_hostname, dt):
   jobs = []
@@ -55,7 +53,6 @@ def getJobForHost(src_hostname, dt):
 
 if __name__ == '__main__':
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
-  init_test_data.init_test_data()
 #  iperf_dt = datetime.datetime.now() - IPERF_INTERVAL
   dt = datetime.datetime(2013, 1,1, 0,0,0)
   jobs = getJobForHost('fe', dt)

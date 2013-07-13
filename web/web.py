@@ -7,7 +7,7 @@ import json
 import logging
 
 import query
-import config 
+import config
 
 @route('/assets/<filepath:path>')
 def server_static(filepath):
@@ -76,7 +76,7 @@ def api_flowstats(hostname):
 def api_query_graph(module,metric):
   dt_start = datetime.datetime.now() - datetime.timedelta(minutes=5)
   dt_end = datetime.datetime.now()
-  count = 5 
+  count = 5
   graph = query.graph_query(module, metric, count, dt_start, dt_end)
   return {"result": graph}
 
