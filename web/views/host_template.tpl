@@ -19,15 +19,17 @@
   </div>
 
 <script type="text/javascript">
-nv.addGraph(function() {
-    var testdata = exampleData(),
+d3.json('/api/query/host/{{hostname}}/iperf/bandwidth', function (data) {
+  nv.addGraph(function() {
+    var testdata = data,
         chart = nv.models.linePlusBarChart()
-          .margin({top: 30, right: 60, bottom: 50, left: 70})
+          .margin({top: 30, right: 50, bottom: 30, left: 50})
           .x(function(d,i) { return i })
           .color(d3.scale.category10().range());
     chart.xAxis.tickFormat(function(d) {
-      var dx = testdata[0].values[d] && testdata[0].values[d].x || 0;
-      return d3.time.format('%x')(new Date(dx))
+      console.log(data['result']['c0'][d][0]);
+      var dx = data['result']['c0'][d][0] ;
+      return d3.time.format('%X')(new Date(dx))
     });
 
     chart.y1Axis
@@ -38,8 +40,6 @@ nv.addGraph(function() {
 
     chart.bars.forceY([0]);
     //chart.lines.forceY([0]);
-    d3.json('/api/query/host/{{hostname}}/iperf/bandwidth', function (data) {
-      console.log(data['result']['c0']) ;
       bwdatum = []
       for (var k in data['result']) {
         d = {
@@ -48,7 +48,6 @@ nv.addGraph(function() {
           };
         bwdatum.push(d);
       }
-
       d3.select('#line_graph svg')
           .datum(bwdatum.map(function(series) {
             series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
