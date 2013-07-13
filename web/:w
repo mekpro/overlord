@@ -76,7 +76,7 @@ def host_query(src_hostname, module, metric, count, dt_start, dt_end):
   print rows.count()
   for row in rows:
     r = dict()
-    r["dt"] = dt_to_timestamp(row["dt"])
+    r["dt"] = str(row["dt"])
     r["key"] = row["dest"]
     r["value"] = row[metric]
     result.append(r)
