@@ -38,14 +38,26 @@ nv.addGraph(function() {
 
     chart.bars.forceY([0]);
     //chart.lines.forceY([0]);
-
-    d3.select('#line_graph svg')
-        .datum(exampleData())
+    d3.json('/api/query/host/fe/iperf/bandwidth', function (data) {
+      console.log(data['result']['c0']) ;
+      d3.select('#line_graph svg')
+          .datum( [{
+              "key" : "c0",
+              "bar": true,
+              "values" : data['result']['c0']
+              },{
+              "key" : "c1",
+              "values": data['result']['c1']
+              }]
+              .map(function(series) {
+            series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
+            return series;}))
       .transition().duration(500).call(chart);
 
-    nv.utils.windowResize(chart.update);
+      nv.utils.windowResize(chart.update);
 
-    return chart;
+      return chart;
+    });
 });
 
 function exampleData() {
