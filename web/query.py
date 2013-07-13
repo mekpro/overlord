@@ -65,7 +65,7 @@ def host_tables(hostname, metric="ping", dt=None):
   return table
 
 def host_query(src_hostname, module, metric, count, dt_start, dt_end):
-  result = []
+  result = dict()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   query = {
     'src' : src_hostname,
@@ -75,11 +75,11 @@ def host_query(src_hostname, module, metric, count, dt_start, dt_end):
   rows = conn['values'].find(query)
   print rows.count()
   for row in rows:
-    r = dict()
-    r["dt"] = dt_to_timestamp(row["dt"])
-    r["key"] = row["dest"]
-    r["value"] = row[metric]
-    result.append(r)
+    if row["dest"] not in result:
+      result[row["dest"]] = list()
+    r = (dt_to_timestamp(row["dt"]), row[metric])
+    result[row["dest"]].append(r)
+
   return result
 
 def graph_query(module, metric, count, dt_start, dt_end):
