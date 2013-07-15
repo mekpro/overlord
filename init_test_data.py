@@ -2,6 +2,7 @@ import datetime
 from pymongo import MongoClient
 import logging
 import random
+import sys
 
 from server import config
 
@@ -27,7 +28,12 @@ def init_test_schema():
 
   # initdata 
   for hostname,flows in zip(HOSTS,FLOWS):
-    h = {'hostname': hostname, 'authkey': 'none', 'status': 'idle'}
+    h = {
+      'hostname': hostname,
+      'authkey': 'none',
+      'status': 'idle',
+      'last_dt': datetime.datetime(2000, 1, 1, 0, 0),
+    }
     hostdb.insert(h)
     for dest in flows:
       flow = {
@@ -65,18 +71,34 @@ def create_values(value_type, values, start_dt, count, time_step):
           row["dt"] = start_dt + datetime.timedelta(seconds=k*time_step)
           conn['values'].insert(row)
 
+def create_host_history(start_dt, count, time_step):
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  hosts = list(conn['host'].find())
+  state_list = ['idle','idle','idle','timeout','busy','running','running']
+  for host in hosts:
+    for k in range(0,count):
+      row = dict()
+      row["hostname"] = host["hostname"]
+      row["dt"] = start_dt + datetime.timedelta(seconds=k*time_step)
+      status = state_list[random.randint(0,len(state_list)-1)]
+      row["status"] = status
+      conn['host_history'].insert(row)
+
 if __name__ == '__main__':
   ping_values = {'min': 0.42, 'max': 1.23, 'avg': 0.56, 'mdev': 0.04}
   iperf_values = {'bandwidth': 1234567}
   hosts = ['fe','c0','c1','c2', 'c3', 'c4', 'c5']
-  count = 1000
+  count = 100
   time_step = 300
   start_dt = datetime.datetime.now() - datetime.timedelta(seconds=count*time_step)
 
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   init_test_schema()
   print "hosts count: %d" %conn['host'].count()
-  create_values('ping', ping_values, start_dt, count, time_step)
-  print "values count: %d" %conn['values'].count()
-  create_values('iperf', iperf_values, start_dt, count, time_step)
-  print "values count: %d" %conn['values'].count()
+  if (sys.argv[1] == 'create_data'):
+    create_values('ping', ping_values, start_dt, count, time_step)
+    print "values count: %d" %conn['values'].count()
+    create_values('iperf', iperf_values, start_dt, count, time_step)
+    print "values count: %d" %conn['values'].count()
+    create_host_history(start_dt, count, time_step)
+
