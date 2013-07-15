@@ -82,7 +82,7 @@ def api_query_graph(module,metric):
 
 @route('/api/query/host/<hostname>/<module>/<metric>')
 def api_query_host(hostname, module, metric):
-  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=10)
+  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=120)
   dt_end = datetime.datetime.now()
   count = 5
   table = query.host_query(hostname, module, metric, count, dt_start, dt_end)

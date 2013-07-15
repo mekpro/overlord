@@ -22,24 +22,22 @@
 d3.json('/api/query/host/{{hostname}}/iperf/bandwidth', function (data) {
   nv.addGraph(function() {
     var testdata = data,
-        chart = nv.models.linePlusBarChart()
-          .margin({top: 30, right: 50, bottom: 30, left: 50})
+        chart = nv.models.lineChart()
+          .margin({top: 30, right: 20, bottom: 30, left: 60})
           .x(function(d,i) { return i })
           .color(d3.scale.category10().range());
+
     chart.xAxis.tickFormat(function(d) {
-      console.log(data['result']['c0'][d][0]);
-      var dx = data['result']['c0'][d][0] ;
-      return d3.time.format('%X')(new Date(dx))
+      keys = Object.keys(data['result']);
+      var dx = data['result'][keys[0]][d][0] ;
+      return d3.time.format('%X')(new Date(dx*1000));
     });
 
-    chart.y1Axis
-        .tickFormat(d3.format(',f'));
-
-    chart.y2Axis
+    chart.yAxis
         .tickFormat(function(d) { return d3.format(',f')(d) + 'bps'});
 
-    chart.bars.forceY([0]);
-    //chart.lines.forceY([0]);
+//    chart.bars.forceY([0]);
+//    chart.lines.forceY([0]);
       bwdatum = []
       for (var k in data['result']) {
         d = {

@@ -30,9 +30,9 @@ def record_values(src_hostname, values, dt):
     row["dest"] = r["dest"]
     row["type"] = r["type"]
     if row["type"] == 'ping':
-      row["min"] = r["min"] * 1000
-      row["max"] = r["max"] * 1000
-      row["avg"] = r["avg"] * 1000
+      row["min"] = float(r["min"])
+      row["max"] = float(r["max"])
+      row["avg"] = float(r["avg"])
       flow["last_ping_dt"] = dt
     elif row["type"] == 'iperf':
       row["bandwidth"] = int(r["bandwidth"])

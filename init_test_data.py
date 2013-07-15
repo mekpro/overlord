@@ -69,8 +69,8 @@ if __name__ == '__main__':
   ping_values = {'min': 0.42, 'max': 1.23, 'avg': 0.56, 'mdev': 0.04}
   iperf_values = {'bandwidth': 1234567}
   hosts = ['fe','c0','c1','c2', 'c3', 'c4', 'c5']
-  count = 100
-  time_step = 60
+  count = 1000
+  time_step = 300
   start_dt = datetime.datetime.now() - datetime.timedelta(seconds=count*time_step)
 
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
