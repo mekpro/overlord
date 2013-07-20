@@ -112,7 +112,7 @@ function exampleData() {
   <tr>
     <td>{{row["dest"]}}</td>
     <td>{{row["dt"].strftime("%H:%M:%S")}}</td>
-    <td>{{round(row["bandwidth"]/1048576.0, 3)}}</td>
+    <td>{{round(row["bandwidth"])}}</td>
   </tr>
   %end
   </table>

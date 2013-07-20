@@ -35,7 +35,7 @@ def record_values(src_hostname, values, dt):
       row["avg"] = float(r["avg"])
       flow["last_ping_dt"] = dt
     elif row["type"] == 'iperf':
-      row["bandwidth"] = int(r["bandwidth"])
+      row["bandwidth"] = float(r["bandwidth"])
       flow["last_iperf_dt"] = dt
     else:
       logging.error("invalid value type: %s" %srow["type"])
