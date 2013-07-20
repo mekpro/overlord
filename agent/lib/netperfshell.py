@@ -1,7 +1,7 @@
 import os
 
 def run_iperf(hostname, port=None):
-  iperf_cmd = "netperf -f k "
+  iperf_cmd = "netperf -f m "
   iperf_cmd += "-H %s" %str(hostname)
   if port is not None:
     iperf_cmd += " -p %s" %str(port)
