@@ -7,7 +7,7 @@ import logging
 import config
 from lib.daemon import Daemon
 
-from lib import iperfshell
+from lib import netperfshell
 from lib import pingshell
 
 logger = logging.getLogger('Agent')
@@ -16,16 +16,18 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
 def spawn_iperf_server(port=None):
-  os.popen('killall -9 -v iperf')
-  output = os.system('/usr/bin/iperf -s -D &')
-  print 'iperf started'
+  #os.popen('killall -9 -v iperf')
+  #output = os.system('/usr/bin/iperf -s -D &')
+  os.popen('killall -9 -v netserver')
+  output = os.system('netserver')
+  print 'netperf server started'
 
 class Agent(Daemon):
   def run(self):
     spawn_iperf_server()
     headers = {'content-type': 'application/json'}
     request = dict()
-    request["hostname"] = config.AGENT_HOSTNAME 
+    request["hostname"] = config.AGENT_HOSTNAME
     request["authkey"] = 'none'
     request["state"] = 'idle'
     request["results"] = []
@@ -48,8 +50,8 @@ class Agent(Daemon):
             result['dest'] = job["hostname"]
             if job['type'] == 'iperf':
               result['type'] = 'iperf'
-              tmp = iperfshell.run_iperf(job["hostname"])
-              values = iperfshell.parse_iperf(tmp)
+              tmp = netperfshell.run_iperf(job["hostname"])
+              values = netperfshell.parse_iperf(tmp)
             elif job['type'] == 'ping':
               result['type'] = 'ping'
               tmp = pingshell.run_ping(job["hostname"])
