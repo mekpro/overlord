@@ -85,20 +85,26 @@ def create_host_history(start_dt, count, time_step):
       conn['host_history'].insert(row)
 
 if __name__ == '__main__':
+  count = 0
+  if len(sys.argv) == 2:
+    count = int(sys.argv[1])
+  else:
+    print 'python init_test_data.py [size]'
+    print 'put size = 0 to only initiate schema'
+    sys.exit(0)
+
   ping_values = {'min': 0.42, 'max': 1.23, 'avg': 0.56, 'mdev': 0.04}
   iperf_values = {'bandwidth': 1234567}
   hosts = ['fe','c0','c1','c2', 'c3', 'c4', 'c5']
-  count = 100
   time_step = 300
   start_dt = datetime.datetime.now() - datetime.timedelta(seconds=count*time_step)
 
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   init_test_schema()
   print "hosts count: %d" %conn['host'].count()
-  if (sys.argv[1] == 'create_data'):
-    create_values('ping', ping_values, start_dt, count, time_step)
-    print "values count: %d" %conn['values'].count()
-    create_values('iperf', iperf_values, start_dt, count, time_step)
-    print "values count: %d" %conn['values'].count()
-    create_host_history(start_dt, count, time_step)
+  create_values('ping', ping_values, start_dt, count, time_step)
+  print "values count: %d" %conn['values'].count()
+  create_values('iperf', iperf_values, start_dt, count, time_step)
+  print "values count: %d" %conn['values'].count()
+  create_host_history(start_dt, count, time_step)
 
