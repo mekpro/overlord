@@ -79,6 +79,11 @@ function exampleData() {
 
 </div>
 <div>
+   <div id='datetimebox'>
+   <h3>Datetime picker</h3>
+   <div id='datetimepicker'> </div>
+
+  </div>
   <h2>Ping Table</h2>
   <table class='table'>
   <tr>
@@ -121,6 +126,13 @@ function exampleData() {
 <div>
   <h2>Network Utilization</h2>
 </div>
+
+
+<script type="text/javascript">
+  $('#datetimepicker').datetimepicker({
+    format: 'dd/MM/yyyy hh:mm:ss',
+  });
+</script>
 %end 
 
 %rebase columns leftblock=leftblock, rightblock=rightblock, title=title
