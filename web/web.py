@@ -40,29 +40,30 @@ def heatmap_daily_view():
 @get('/host/<hostname>')
 def host_view(hostname):
   last_update = datetime.datetime.now()
+  dt_start = datetime.datetime.now() - datetime.timedelta(hours=2)
+  dt_end = datetime.datetime.now()
   hostlist = query.hostlist()
   ping_table = query.host_tables(hostname, metric='ping')
   iperf_table = query.host_tables(hostname, metric='iperf')
-  return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
-
+  return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, dt_start=query.dt_to_timestamp(dt_start), dt_end=query.dt_to_timestamp(dt_end), ping_table=ping_table, iperf_table=iperf_table)
 
 @post('/host/<hostname>')
 def host_view_post(hostname):
-  if request.forms.get('start_dt') == '':
-    start_dt = datetime.datetime.now() - datetime.timedelta(hours=1)
+  if request.forms.get('dt_start') == '':
+    dt_start = datetime.datetime.now() - datetime.timedelta(hours=2)
   else:
-    start_dt = query.parse_form_dt(request.forms.get('start_dt'))
+    dt_start = query.parse_form_dt(request.forms.get('dt_start'))
 
-  if request.forms.get('end_dt') == '':
-    end_dt = start_dt + datetime.timedelta(hours=1)
+  if request.forms.get('dt_end') == '':
+    dt_end = dt_start + datetime.timedelta(hours=2)
   else:
-    end_dt = query.parse_form_dt(request.forms.get('end_dt'))
+    dt_end = query.parse_form_dt(request.forms.get('dt_end'))
 
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
   ping_table = query.host_tables(hostname, metric='ping')
   iperf_table = query.host_tables(hostname, metric='iperf')
-  return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
+  return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, dt_start=query.dt_to_timestamp(dt_start), dt_end=query.dt_to_timestamp(dt_end), ping_table=ping_table, iperf_table=iperf_table)
 
 
 @route('/api')

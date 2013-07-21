@@ -19,7 +19,7 @@
   </div>
 
 <script type="text/javascript">
-d3.json('/api/query/host/{{hostname}}/iperf/bandwidth', function (data) {
+d3.json('/api/query/host/{{hostname}}/iperf/bandwidth?dt_start={{dt_start}}&dt_end={{dt_end}}', function (data) {
   nv.addGraph(function() {
     var testdata = data,
         chart = nv.models.lineChart()
@@ -84,7 +84,7 @@ function exampleData() {
      <form method="POST">
        <a>begin</a>
        <div id="start_datetimepicker" class="input-append date">
-          <input type="text" name="start_dt"></input>
+          <input type="text" name="dt_start"></input>
           <span class="add-on">
             <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
           </span>
@@ -92,7 +92,7 @@ function exampleData() {
 
        <a>end:</a>
        <div id="end_datetimepicker" class="input-append date">
-          <input type="text" name="end_dt"></input>
+          <input type="text" name="dt_end"></input>
           <span class="add-on">
             <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
           </span>
