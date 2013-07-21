@@ -48,12 +48,16 @@ def host_view(hostname):
 
 @post('/host/<hostname>')
 def host_view_post(hostname):
-  if request.forms.get('start_dt') is None:
+  if request.forms.get('start_dt') == '':
     start_dt = datetime.datetime.now() - datetime.timedelta(hours=1)
   else:
-    start_dt = (request.forms.get('start_dt'))
+    start_dt = query.parse_form_dt(request.forms.get('start_dt'))
 
-  logging.error("start_dt: %s", str(start_dt))
+  if request.forms.get('end_dt') == '':
+    end_dt = start_dt + datetime.timedelta(hours=1)
+  else:
+    end_dt = query.parse_form_dt(request.forms.get('end_dt'))
+
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
   ping_table = query.host_tables(hostname, metric='ping')
@@ -87,7 +91,11 @@ def api_flowstats(hostname):
 
 @route('/api/query/graph/<module>/<metric>')
 def api_query_graph(module,metric):
-  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=5)
+  if request.get('dt_start') == '':
+    dt_start = datetime.datetime.now() - datetime.timedelta(minutes=5)
+  else:
+    dt_start = query.dt_from_timestamp(dt_start)
+
   dt_end = datetime.datetime.now()
   count = 5
   graph = query.graph_query(module, metric, count, dt_start, dt_end)

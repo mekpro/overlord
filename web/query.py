@@ -8,6 +8,13 @@ import config
 def dt_to_timestamp(dt):
   return time.mktime(dt.timetuple())
 
+def dt_from_timestamp(timestamp):
+  return datetime.datetime.fromtimestamp(timestamp)
+
+def parse_form_dt(dt_string):
+  dt_format = '%d/%m/%Y %H:%M:%S'
+  return datetime.datetime.strptime(dt_string, dt_format)
+
 def hostlist():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   result = []
