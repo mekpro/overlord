@@ -80,9 +80,25 @@ function exampleData() {
 </div>
 <div>
    <div id='datetimebox'>
-   <h3>Datetime picker</h3>
-   <div id='datetimepicker'> </div>
+     <h3>Time Range</h3>
+     <form method="POST">
+       <a>begin</a>
+       <div id="start_datetimepicker" class="input-append date">
+          <input type="text"></input>
+          <span class="add-on">
+            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+          </span>
+       </div>
 
+       <a>end:</a>
+       <div id="end_datetimepicker" class="input-append date">
+          <input type="text"></input>
+          <span class="add-on">
+            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+          </span>
+       </div>
+       <input type="submit" value="refresh">
+     </form>
   </div>
   <h2>Ping Table</h2>
   <table class='table'>
@@ -127,11 +143,9 @@ function exampleData() {
   <h2>Network Utilization</h2>
 </div>
 
-
 <script type="text/javascript">
-  $('#datetimepicker').datetimepicker({
-    format: 'dd/MM/yyyy hh:mm:ss',
-  });
+  $('#start_datetimepicker').datetimepicker({format: 'dd/MM/yyyy hh:mm:ss',});
+  $('#end_datetimepicker').datetimepicker({format: 'dd/MM/yyyy hh:mm:ss',});
 </script>
 %end 
 

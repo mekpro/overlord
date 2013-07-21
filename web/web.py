@@ -1,5 +1,5 @@
 import bottle
-from bottle import route, run, request, template
+from bottle import get, post, route, run, request, template
 from bottle import static_file
 from pymongo import MongoClient
 import datetime
@@ -37,16 +37,31 @@ def calendar_view():
 def heatmap_daily_view():
   return template('heatmap_template')
 
-@route('/host')
+@get('/host')
 def host_view():
   hostname = request.GET["hostname"]
-  logging.error("hostname from GET: %s" %hostname)
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
   ping_table = query.host_tables(hostname, metric='ping')
   iperf_table = query.host_tables(hostname, metric='iperf')
-  logging.error(ping_table)
   return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
+
+
+@post('/host')
+def host_view_post():
+  hostname = request.GET["hostname"]
+  if request.forms.get('start_dt') is None:
+    start_dt = datetime.datetime.now() - datetime.timedelta(hours=1)
+  else:
+    start_dt = (request.forms.get('start_dt'))
+
+  logging.error("start_dt: %s", str(start_dt))
+  last_update = datetime.datetime.now()
+  hostlist = query.hostlist()
+  ping_table = query.host_tables(hostname, metric='ping')
+  iperf_table = query.host_tables(hostname, metric='iperf')
+  return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
+
 
 @route('/api')
 def api_index():
