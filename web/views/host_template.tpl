@@ -3,7 +3,7 @@
   <li class="nav-header">Sidebar</li>
   <li class="active"><a href="/">Overview</a></li>
   %for h in hostlist:
-    <li><a href="/host?hostname={{h}}">{{h}}</a></li>
+    <li><a href="/host/{{h}}">{{h}}</a></li>
   %end
 </ul>
 %end
@@ -12,7 +12,7 @@
 <div class="hero-unit">
   <h1>{{hostname}}</h1>
   <p>Hostinfo
-    <a href="/host?hostname={{hostname}}" class="btn btn-primary btn-large">&laquo Refresh &raquo;</a>
+    <a href="/host/{{hostname}}" class="btn btn-primary btn-large">&laquo Refresh &raquo;</a>
   </p>
   <div id=line_graph>
     <svg style='height:500px'> </svg>
@@ -84,7 +84,7 @@ function exampleData() {
      <form method="POST">
        <a>begin</a>
        <div id="start_datetimepicker" class="input-append date">
-          <input type="text"></input>
+          <input type="text" name="start_dt"></input>
           <span class="add-on">
             <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
           </span>
@@ -92,7 +92,7 @@ function exampleData() {
 
        <a>end:</a>
        <div id="end_datetimepicker" class="input-append date">
-          <input type="text"></input>
+          <input type="text" name="end_dt"></input>
           <span class="add-on">
             <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
           </span>

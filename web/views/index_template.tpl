@@ -4,7 +4,7 @@
   <li class="nav-header">Hostlist</li>
   <li class="active"><a href="/">Overview</a></li>
   %for h in hostlist:
-   <li><a href="/host?hostname={{h}}">{{h}}</a></li>
+   <li><a href="/host/{{h}}">{{h}}</a></li>
   %end
 </ul>
 %end
@@ -30,7 +30,7 @@
       <div class="span4">
         <h2>{{h}}</h2>
         <p>{{h}} information</p>
-        <a class="btn" href="/host?hostname={{h}}">View details &raquo;</a>
+        <a class="btn" href="/host/{{h}}">View details &raquo;</a>
       </div><!--/span-->
     %if i%3 == 2:
       </div>

@@ -37,9 +37,8 @@ def calendar_view():
 def heatmap_daily_view():
   return template('heatmap_template')
 
-@get('/host')
-def host_view():
-  hostname = request.GET["hostname"]
+@get('/host/<hostname>')
+def host_view(hostname):
   last_update = datetime.datetime.now()
   hostlist = query.hostlist()
   ping_table = query.host_tables(hostname, metric='ping')
@@ -47,9 +46,8 @@ def host_view():
   return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, ping_table=ping_table, iperf_table=iperf_table)
 
 
-@post('/host')
-def host_view_post():
-  hostname = request.GET["hostname"]
+@post('/host/<hostname>')
+def host_view_post(hostname):
   if request.forms.get('start_dt') is None:
     start_dt = datetime.datetime.now() - datetime.timedelta(hours=1)
   else:
