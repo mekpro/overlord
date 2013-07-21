@@ -62,7 +62,7 @@
 
   <link href="../assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
   </head>
-  <body >
+  <body>
 
 
     <div class="navbar navbar-inverse navbar-fixed-top">

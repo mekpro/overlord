@@ -14,8 +14,10 @@
 <link href="/assets/Jit/Examples/css/ForceDirected.css" rel="stylesheet"/>
 <script language="javascript" type="text/javascript" src="/assets/edited/force_directed.js"></script>
 <script language=javascript>
-  var json = {{!graph}}
-//  init();
+  function init() {
+    var json = {{!graph}}
+  }
+  window.onload = init;
 </script>
 
   <div class="hero-unit">
