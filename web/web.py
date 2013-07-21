@@ -91,20 +91,34 @@ def api_flowstats(hostname):
 
 @route('/api/query/graph/<module>/<metric>')
 def api_query_graph(module,metric):
-  if request.get('dt_start') == '':
-    dt_start = datetime.datetime.now() - datetime.timedelta(minutes=5)
+  if 'dt_start' not in request.GET:
+    dt_start = datetime.datetime.now() - datetime.timedelta(minutes=120)
   else:
-    dt_start = query.dt_from_timestamp(dt_start)
+    dt_start = query.dt_from_timestamp(float(request.GET['dt_start']))
 
-  dt_end = datetime.datetime.now()
+  if 'dt_end' not in request.GET:
+    dt_end = dt_start + datetime.timedelta(minutes=120)
+  else:
+    dt_end = query.dt_from_timestamp(float(request.GET['dt_end']))
+
+  logging.error('query dt_start %s', str(dt_start))
+  logging.error('query dt_end %s', str(dt_end))
   count = 5
   graph = query.graph_query(module, metric, count, dt_start, dt_end)
   return {"result": graph}
 
 @route('/api/query/host/<hostname>/<module>/<metric>')
 def api_query_host(hostname, module, metric):
-  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=120)
-  dt_end = datetime.datetime.now()
+  if 'dt_start' not in request.GET:
+    dt_start = datetime.datetime.now() - datetime.timedelta(minutes=120)
+  else:
+    dt_start = query.dt_from_timestamp(float(request.GET['dt_start']))
+
+  if 'dt_end' not in request.GET:
+    dt_end = dt_start + datetime.timedelta(minutes=120)
+  else:
+    dt_end = query.dt_from_timestamp(float(request.GET['dt_end']))
+
   count = 5
   table = query.host_query(hostname, module, metric, count, dt_start, dt_end)
   return {"result": table}
