@@ -16,7 +16,7 @@ def api_dt_start(request):
     dt_start = query.dt_from_timestamp(float(request.GET['dt_start']))
   return dt_start
 
-def api_dt_end(request):
+def api_dt_end(request, dt_start):
   if 'dt_end' not in request.GET:
     dt_end = dt_start + datetime.timedelta(minutes=120)
   else:
@@ -121,9 +121,17 @@ def api_query_graph(module,metric):
 @get('/api/query/host/<hostname>/<module>/<metric>')
 def api_query_host(hostname, module, metric):
   dt_start = api_dt_start(request)
-  dt_end = api_dt_end(request)
+  dt_end = api_dt_end(request, dt_start)
   count = 5
   table = query.host_query(hostname, module, metric, count, dt_start, dt_end)
+  return {"result": table}
+
+@get('/api/aggregate/host/<hostname>/<module>/<metric>')
+def api_aggregate_host(hostname, module, metric):
+  dt_start = api_dt_start(request)
+  dt_end = api_dt_end(request, dt_start)
+  count = 5
+  table = query.host_aggregate(hostname, module, metric, count, dt_start, dt_end)
   return {"result": table}
 
 if __name__ == '__main__':

@@ -89,6 +89,24 @@ def host_query(src_hostname, module, metric, count, dt_start, dt_end):
 
   return result
 
+
+def host_aggregate(src_hostname, module, metric, count, dt_start, dt_end):
+  result = dict()
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  result = conn["values"].aggregate([
+    {"$match": {"src": src_hostname, "type": module}},
+    {"$group": {"_id": "null",
+      "count" : {"$sum" : 1},
+      "sum" : { "$sum" : "$"+metric},
+      "avg" : { "$avg" : "$"+metric},
+      "min" : { "$min" : "$"+metric},
+      "max" : { "$max" : "$"+metric},
+      }
+    },
+  ])
+
+  return result
+
 def graph_query(module, metric, count, dt_start, dt_end):
   result = dict()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
