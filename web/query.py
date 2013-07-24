@@ -91,7 +91,7 @@ def host_query(src_hostname, module, metric, count, dt_start, dt_end):
   return result
 
 
-def host_aggregate(src_hostname, module, metric, count, dt_start, dt_end):
+def host_aggregate(src_hostname, module, metric, dt_start, dt_end):
   result = dict()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   result = conn["values"].aggregate([
@@ -109,7 +109,7 @@ def host_aggregate(src_hostname, module, metric, count, dt_start, dt_end):
   return result
 
 
-def host_mapreduce(src_hostname, module, metric, count, dt_start, dt_end):
+def host_mapreduce(src_hostname, module, metric, dt_start, dt_end):
   result = dict()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   mapcode = Code("""

@@ -130,8 +130,7 @@ def api_query_host(hostname, module, metric):
 def api_aggregate_host(hostname, module, metric):
   dt_start = get_dt_start(request)
   dt_end = get_dt_end(request, dt_start)
-  count = 5
-  table = query.host_mapreduce(hostname, module, metric, count, dt_start, dt_end)
+  table = query.host_mapreduce(hostname, module, metric, dt_start, dt_end)
   return {"result": table}
 
 if __name__ == '__main__':
