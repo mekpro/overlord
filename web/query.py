@@ -2,6 +2,7 @@ import datetime
 from pymongo import MongoClient
 import logging
 import time
+from bson.code import Code
 
 import config
 
@@ -107,6 +108,51 @@ def host_aggregate(src_hostname, module, metric, count, dt_start, dt_end):
 
   return result
 
+
+def host_mapreduce(src_hostname, module, metric, count, dt_start, dt_end):
+  result = dict()
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  mapcode = Code("""
+    function () {
+      emit(1, {
+        sum: this.bandwidth,
+        min: this.bandwidth,
+        max: this.bandwidth,
+        count: 1,
+        diff: 0,
+      });
+    }
+    """)
+  reducecode = Code("""
+  function (key, values) {
+    var a = values[0]; // will reduce into here
+    for (var i=1/*!*/; i < values.length; i++){
+        var b = values[i]; // will merge 'b' into 'a'
+        // temp helpers
+        var delta = a.sum/a.count - b.sum/b.count; // a.mean - b.mean
+        var weight = (a.count * b.count)/(a.count + b.count);
+        // do the reducing
+        a.diff += b.diff + delta*delta*weight;
+        a.sum += b.sum;
+        a.count += b.count;
+        a.min = Math.min(a.min, b.min);
+        a.max = Math.max(a.max, b.max);
+    }
+    return a;
+}
+""")
+  finalizecode = Code("""
+  function(key, value) {
+    value.avg = value.sum / value.count;
+    value.variance = value.diff / value.count;
+    value.stddev = Math.sqrt(value.variance);
+    return value;
+}
+""")
+
+  result = conn.values.map_reduce(mapcode, reducecode, "myresult", finalize=finalizecode)
+  return result
+
 def graph_query(module, metric, count, dt_start, dt_end):
   result = dict()
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
@@ -150,5 +196,11 @@ if __name__ == '__main__':
   print host_tables('fe', 'iperf', dt_start)
   print host_query('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
   print graph_query('iperf', 'bandwidth', 5, dt_start, dt_end)
+  print host_aggregate('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
+  result = host_mapreduce('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
+  for doc in result.find():
+    print doc
+
+
 #  print graph_force()
 
