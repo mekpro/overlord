@@ -115,14 +115,14 @@ def host_mapreduce(src_hostname, module, metric, count, dt_start, dt_end):
   mapcode = Code("""
     function () {
       emit(1, {
-        sum: this.bandwidth,
-        min: this.bandwidth,
-        max: this.bandwidth,
+        sum: this.metric,
+        min: this.metric,
+        max: this.metric,
         count: 1,
         diff: 0,
       });
     }
-    """)
+    """.replace("metric", metric))
   reducecode = Code("""
   function (key, values) {
     var a = values[0]; // will reduce into here
@@ -149,8 +149,13 @@ def host_mapreduce(src_hostname, module, metric, count, dt_start, dt_end):
     return value;
 }
 """)
-
-  result = conn.values.map_reduce(mapcode, reducecode, "myresult", finalize=finalizecode)
+  query = {
+    'src' : src_hostname,
+    'type' : module,
+    'dt' : { '$gt' : dt_start, '$lte': dt_end },
+  }
+  mr_result = conn.values.map_reduce(mapcode, reducecode, "myresult", query=query, finalize=finalizecode)
+  result =  list(mr_result.find())[0]
   return result
 
 def graph_query(module, metric, count, dt_start, dt_end):
@@ -189,7 +194,7 @@ def graph_force():
   return graph
 
 if __name__ == '__main__':
-  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=10)
+  dt_start = datetime.datetime.now() - datetime.timedelta(minutes=1700)
   dt_end = datetime.datetime.now()
 
   print hostlist()
@@ -197,9 +202,7 @@ if __name__ == '__main__':
   print host_query('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
   print graph_query('iperf', 'bandwidth', 5, dt_start, dt_end)
   print host_aggregate('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
-  result = host_mapreduce('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
-  for doc in result.find():
-    print doc
+  print host_mapreduce('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
 
 
 #  print graph_force()

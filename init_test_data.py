@@ -67,7 +67,7 @@ def create_values(value_type, values, start_dt, count, time_step):
           for k1,v1 in values.items():
             row[k1] = v1
           if value_type == 'iperf':
-            row["bandwidth"] = random.randint(1500000,2000000)
+            row["bandwidth"] = random.randint(0,100)
           row["dt"] = start_dt + datetime.timedelta(seconds=k*time_step)
           conn['values'].insert(row)
 
