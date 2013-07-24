@@ -114,7 +114,7 @@ def host_mapreduce(src_hostname, module, metric, dt_start, dt_end):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   mapcode = Code("""
     function () {
-      emit(1, {
+      emit(this.dest, {
         sum: this.metric,
         min: this.metric,
         max: this.metric,
@@ -126,7 +126,7 @@ def host_mapreduce(src_hostname, module, metric, dt_start, dt_end):
   reducecode = Code("""
   function (key, values) {
     var a = values[0]; // will reduce into here
-    for (var i=1/*!*/; i < values.length; i++){
+    for (var i=1; i < values.length; i++){
         var b = values[i]; // will merge 'b' into 'a'
         // temp helpers
         var delta = a.sum/a.count - b.sum/b.count; // a.mean - b.mean
@@ -155,7 +155,9 @@ def host_mapreduce(src_hostname, module, metric, dt_start, dt_end):
     'dt' : { '$gt' : dt_start, '$lte': dt_end },
   }
   mr_result = conn.values.map_reduce(mapcode, reducecode, "myresult", query=query, finalize=finalizecode)
-  result =  list(mr_result.find())[0]
+  # do a little transpose
+  for r in list(mr_result.find()):
+    result[r["_id"]] = r["value"]
   return result
 
 def graph_query(module, metric, count, dt_start, dt_end):
@@ -197,12 +199,12 @@ if __name__ == '__main__':
   dt_start = datetime.datetime.now() - datetime.timedelta(minutes=1700)
   dt_end = datetime.datetime.now()
 
-  print hostlist()
-  print host_tables('fe', 'iperf', dt_start)
-  print host_query('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
-  print graph_query('iperf', 'bandwidth', 5, dt_start, dt_end)
-  print host_aggregate('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
-  print host_mapreduce('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
+#  print hostlist()
+#  print host_tables('fe', 'iperf', dt_start)
+#  print host_query('fe', 'iperf', 'bandwidth', 10, dt_start, dt_end)
+#  print graph_query('iperf', 'bandwidth', 5, dt_start, dt_end)
+#  print host_aggregate('fe', 'iperf', 'bandwidth', dt_start, dt_end)
+  print host_mapreduce('fe', 'iperf', 'bandwidth', dt_start, dt_end)
 
 
 #  print graph_force()
