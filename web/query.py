@@ -114,12 +114,14 @@ def host_mapreduce(src_hostname, module, metric, dt_start, dt_end):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   mapcode = Code("""
     function () {
+      var dt = new Date(this.dt);
       emit(this.dest, {
         sum: this.metric,
         min: this.metric,
         max: this.metric,
         count: 1,
         diff: 0,
+        last_dt: dt
       });
     }
     """.replace("metric", metric))
@@ -137,6 +139,9 @@ def host_mapreduce(src_hostname, module, metric, dt_start, dt_end):
         a.count += b.count;
         a.min = Math.min(a.min, b.min);
         a.max = Math.max(a.max, b.max);
+        if (a.last_dt < b.last_dt){
+          a.last_dt = b.last_dt;
+        }
     }
     return a;
 }
