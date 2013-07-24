@@ -71,8 +71,9 @@ def host_view(hostname):
   dt_start = datetime.datetime.now() - datetime.timedelta(hours=2)
   dt_end = datetime.datetime.now()
   hostlist = query.hostlist()
-  ping_table = query.host_tables(hostname, metric='ping')
-  iperf_table = query.host_tables(hostname, metric='iperf')
+  ping_table = query.host_mapreduce(hostname, 'ping', 'avg', dt_start, dt_end)
+  iperf_table = query.host_mapreduce(hostname, 'iperf', 'bandwidth', dt_start, dt_end)
+  logging.error(iperf_table)
   return template('host_template', title=hostname, hostname=hostname, hostlist=hostlist, last_update=last_update, dt_start=query.dt_to_timestamp(dt_start), dt_end=query.dt_to_timestamp(dt_end), ping_table=ping_table, iperf_table=iperf_table)
 
 @post('/host/<hostname>')

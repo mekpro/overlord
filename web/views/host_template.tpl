@@ -11,7 +11,7 @@
 %def rightblock():
 <div class="hero-unit">
   <h1>{{hostname}}</h1>
-  <p>Hostinfo
+  <p>Bandwidth Graph
     <a href="/host/{{hostname}}" class="btn btn-primary btn-large">&laquo Refresh &raquo;</a>
   </p>
   <div id=line_graph>
@@ -34,7 +34,7 @@ d3.json('/api/query/host/{{hostname}}/iperf/bandwidth?dt_start={{dt_start}}&dt_e
     });
 
     chart.yAxis
-        .tickFormat(function(d) { return d3.format(',f')(d) + 'bps'});
+        .tickFormat(function(d) { return d3.format(',f')(d) + 'MB/s'});
 
 //    chart.bars.forceY([0]);
 //    chart.lines.forceY([0]);
@@ -100,40 +100,56 @@ function exampleData() {
        <input type="submit" value="refresh">
      </form>
   </div>
-  <h2>Ping Table</h2>
+  <h3>Latency (ms)</h3>
   <table class='table'>
   <tr>
     <th>Destination</th>
     <th>Last Update</th>
-    <th>min</th>
-    <th>max</th>
-    <th>avg</th>
+    <th>Average</th>
+    <th>Count</th>
+    <th>Min</th>
+    <th>Max</th>
+    <th>S.D.</th>
+    <th>Var</th>
   </tr>
-  %for row in ping_table:
+  %for k,v in ping_table.items(): 
   <tr>
-    <td>{{row["dest"]}}</td>
-    <td>{{row["dt"].strftime("%H:%M:%S")}}</td>
-    <td>{{row["min"]}}</td>
-    <td>{{row["max"]}}</td>
-    <td>{{row["avg"]}}</td>
+    <td>{{k}}</td>
+    <td>{{v["last_dt"].strftime("%H:%M:%S")}}</td>
+    <td>{{round(v["avg"],1)}}</td>
+    <td>{{int(v["count"])}}</td>
+    <td>{{v["min"]}}</td>
+    <td>{{v["max"]}}</td>
+    <td>{{round(v["stddev"],2)}}</td>
+    <td>{{round(v["variance"],2)}}</td>
   </tr>
   %end
   </table>
 </div>
 
 <div>
-  <h2>Iperf Table</h2>
+  <h3>Bandwidth(MB/s)</h3>
   <table class='table'>
   <tr>
     <th>Destination</th>
     <th>Last Update</th>
-    <th>Bandwidth (MB/s)</th>
+    <th>Average</th>
+    <th>Count</th>
+    <th>Min</th>
+    <th>Max</th>
+    <th>S.D.</th>
+    <th>Var</th>
   </tr>
-  %for row in iperf_table: 
+  %for k,v in iperf_table.items(): 
   <tr>
-    <td>{{row["dest"]}}</td>
-    <td>{{row["dt"].strftime("%H:%M:%S")}}</td>
-    <td>{{round(row["bandwidth"])}}</td>
+    <td>{{k}}</td>
+    <td>{{v["last_dt"].strftime("%H:%M:%S")}}</td>
+    <td>{{round(v["avg"],1)}}</td>
+    <td>{{int(v["count"])}}</td>
+    <td>{{v["min"]}}</td>
+    <td>{{v["max"]}}</td>
+    <td>{{round(v["stddev"],2)}}</td>
+    <td>{{round(v["variance"],2)}}</td>
   </tr>
   %end
   </table>
