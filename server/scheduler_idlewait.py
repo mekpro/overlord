@@ -17,6 +17,7 @@ def getJobForHost(src_hostname, dt):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   ping_dt = dt - config.PING_INTERVAL
   iperf_dt = dt - config.IPERF_INTERVAL
+  iperf_hard_dt = dt - config.IPERF_HARD_INTERVAL
   src_host = select_host(src_hostname)
 
   query = conn['flow'].find({
@@ -24,15 +25,25 @@ def getJobForHost(src_hostname, dt):
     'last_iperf_dt': {"$lt" : iperf_dt}
   })
   flows = query.sort('last_iperf_dt',1)
-  # Do only one iperf to made the whole system work concurrent
+  # Do only one iperf to made the whole system work concurrently
   for flow in flows:
     dest_host = select_host(flow['dest'])
     logging.error(dest_host)
     if dest_host['status'] == 'idle':
+      logging.error("soft deadline %s -> %s", %(src_host["hostname"],dest_host["hostname"]))
       jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
-      src_host['status'] = 'busy'
+      src_host['status'] = 'running'
       conn['host'].update({"_id": src_host["_id"]}, src_host)
-      dest_host['status'] = 'busy'
+      dest_host['status'] = 'running'
+      conn['host'].update({"_id": dest_host["_id"]}, dest_host)
+      break;
+
+    if dest_host['status'] == 'busy' and flow['last_iperf_dt'] < iperf_hard_dt:
+      logging.error("hard deadline %s -> %s", %(src_host["hostname"],dest_host["hostname"]))
+      jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
+      src_host['status'] = 'running'
+      conn['host'].update({"_id": src_host["_id"]}, src_host)
+      dest_host['status'] = 'running'
       conn['host'].update({"_id": dest_host["_id"]}, dest_host)
       break;
 
@@ -41,8 +52,8 @@ def getJobForHost(src_hostname, dt):
     'last_ping_dt': {"$lt" : ping_dt}
   })
   flows = query.sort('last_ping_dt',1)
-  # Ping does not toggle host status to busy, but need to be done when idle
-  # Src host busy is okay since it will complete iperf first btw
+  # Ping does not toggle host status to running, but need to be done when idle
+  # Src host running is okay since it will complete iperf first btw
   for flow in flows:
     dest_host = select_host(flow['dest'])
     logging.error(dest_host)
@@ -57,7 +68,7 @@ if __name__ == '__main__':
   dt = datetime.datetime(2013, 1,1, 0,0,0)
   jobs = getJobForHost('fe', dt)
   print jobs
-  # tester: busy=2 
-  busy_count = conn['host'].find({'status': 'busy'}).count()
-  if busy_count != 2:
-    print "error busy != 2 , =%d" %busy_count
+  # tester: running=2 
+  running_count = conn['host'].find({'status': 'running'}).count()
+  if running_count != 2:
+    print "error running != 2 , =%d" %running_count

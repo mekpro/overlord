@@ -23,7 +23,7 @@ def record_state(host, current_dt):
 
 # Worker run in daemon to check, made change and record to necesary time-based data
 # Made change to status of non-reponsive agent host to 'timeout' state.
-# Worker also keeps sampling of host status and record to 'worker_state'
+# Worker also keeps sampling of host status and record to 'host_history'
 
 def main():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
