@@ -30,7 +30,7 @@ def getJobForHost(src_hostname, dt):
     dest_host = select_host(flow['dest'])
     logging.error(dest_host)
     if dest_host['status'] == 'idle':
-      logging.error("soft deadline %s -> %s", %(src_host["hostname"],dest_host["hostname"]))
+      logging.error("soft deadline " + src_host["hostname"] + "->" + dest_host["hostname"])
       jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
       src_host['status'] = 'running'
       conn['host'].update({"_id": src_host["_id"]}, src_host)
@@ -39,7 +39,7 @@ def getJobForHost(src_hostname, dt):
       break;
 
     if dest_host['status'] == 'busy' and flow['last_iperf_dt'] < iperf_hard_dt:
-      logging.error("hard deadline %s -> %s", %(src_host["hostname"],dest_host["hostname"]))
+      logging.error("hard deadline " + src_host["hostname"] + "->" + dest_host["hostname"])
       jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
       src_host['status'] = 'running'
       conn['host'].update({"_id": src_host["_id"]}, src_host)
