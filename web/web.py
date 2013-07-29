@@ -132,6 +132,8 @@ def api_aggregate_host(hostname, module, metric):
   dt_start = get_dt_start(request)
   dt_end = get_dt_end(request, dt_start)
   table = query.host_mapreduce(hostname, module, metric, dt_start, dt_end)
+  for k,v in table.items():
+    table[k]['last_dt'] = query.dt_to_timestamp(table[k]['last_dt'])
   return {"result": table}
 
 if __name__ == '__main__':
