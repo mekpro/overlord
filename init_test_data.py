@@ -6,14 +6,17 @@ import sys
 
 from server import config
 
-HOSTS = ['fe','c0','c1','c2','c3','c4']
+HOSTS = ['fe','c0','c1','c2','c3','c4','c5','c6']
 FLOWS = [
-        ['c0','c1','c2','c3','c4'],
-        ['fe','c2','c3'],
+        ['c0','c1','c2','c3','c4','c5','c6'],
+        ['fe','c2','c3','c6'],
         ['fe','c4'],
-        ['fe','c0','c1'],
+        ['fe','c0','c1','c4'],
         ['fe','c0','c2'],
-        ['fe','c0','c1','c3']
+        ['fe','c0','c1','c3'],
+        ['fe','c2','c3','c4'],
+        ['fe','c1','c6'],
+        ['fe','c1','c3','c5'],
         ]
 
 def init_test_schema():

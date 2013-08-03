@@ -28,7 +28,6 @@ def getJobForHost(src_hostname, dt):
   # Do only one iperf to made the whole system work concurrently
   for flow in flows:
     dest_host = select_host(flow['dest'])
-    logging.error(dest_host)
     if dest_host['status'] == 'idle':
       logging.error("soft deadline " + src_host["hostname"] + "->" + dest_host["hostname"])
       jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
@@ -56,7 +55,6 @@ def getJobForHost(src_hostname, dt):
   # Src host running is okay since it will complete iperf first btw
   for flow in flows:
     dest_host = select_host(flow['dest'])
-    logging.error(dest_host)
     if dest_host['status'] == 'idle':
       jobs.append({'type':'ping','hostname': dest_host["hostname"]})
 

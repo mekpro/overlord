@@ -11,9 +11,10 @@ import scheduler_idlewait as scheduler
 def authen(hostname, authkey):
   return True
 
-def change_host_status(hostname, status):
+def change_host_status(hostname, status, dt):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   host = conn.host.find_one({'hostname': hostname})
+  host['last_dt'] = dt
   host['status'] = 'idle'
   conn.host.update({'_id':host['_id']}, host)
 
@@ -43,9 +44,9 @@ def record_values(src_hostname, values, dt):
     conn.flow.update({'_id': flow["_id"]}, flow)
 
     conn.values.insert(row)
-    logging.error("recording : %s" %str(row))
+    logging.error("recording : %s" %str(row['src']))
     conn.flow.update({'_id': flow["_id"]}, flow)
-    logging.error("updating flow time: %s" %str(flow))
+    logging.error("updating flow time:"+  str(flow['last_iperf_dt']) +" : "+ flow['src'] + "->" + flow['dest'])
 
   src_host["status"] = 'idle'
   conn.host.update({'_id':src_host["_id"]}, src_host)
@@ -54,11 +55,11 @@ def record_values(src_hostname, values, dt):
 @post('/listen')
 def index(hostname=0):
   d = request.json
-  logging.info('POST request:' +str(d))
+  logging.error('POST request:' +str(d))
   if not authen(d["hostname"], d["authkey"]):
     return {'error': 'authenticate fail'}
   dt = datetime.datetime.now()
-  change_host_status(d["hostname"], "idle")
+  change_host_status(d["hostname"], "idle", dt)
   record_values(d["hostname"], d["results"], dt)
   jobs = scheduler.getJobForHost(d["hostname"], dt)
   result = dict()

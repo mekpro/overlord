@@ -31,7 +31,6 @@ def main():
   while True:
     current_dt = datetime.datetime.now()
     for host in hostlist:
-      logging.error(str(host))
       if is_host_timeout(host, current_dt):
         host["status"] = 'timeout'
         conn.host.update({'_id': host["_id"]}, host)
