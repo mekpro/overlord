@@ -12,6 +12,14 @@ def select_host(hostname):
 def initialize():
   pass
 
+def createIperfJob(src_host, dest_host):
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  src_host['status'] = 'running'
+  dest_host['status'] = 'running'
+  conn['host'].update({"_id": src_host["_id"]}, src_host)
+  conn['host'].update({"_id": dest_host["_id"]}, dest_host)
+  return {'type':'iperf','hostname': dest_host["hostname"]}
+
 def getJobForHost(src_hostname, dt):
   jobs = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
@@ -29,21 +37,13 @@ def getJobForHost(src_hostname, dt):
   for flow in flows:
     dest_host = select_host(flow['dest'])
     if dest_host['status'] == 'idle':
-      logging.error("soft deadline " + src_host["hostname"] + "->" + dest_host["hostname"])
-      jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
-      src_host['status'] = 'running'
-      dest_host['status'] = 'running'
-      conn['host'].update({"_id": src_host["_id"]}, src_host)
-      conn['host'].update({"_id": dest_host["_id"]}, dest_host)
+      logging.error("soft:" + src_host["hostname"] + "->" + dest_host["hostname"])
+      jobs.append(createIperfJob(src_host, dest_host))
       break;
 
     if dest_host['status'] == 'busy' and flow['last_iperf_dt'] < iperf_hard_dt:
-      logging.error("hard deadline " + src_host["hostname"] + "->" + dest_host["hostname"])
-      jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
-      src_host['status'] = 'running'
-      dest_host['status'] = 'running'
-      conn['host'].update({"_id": src_host["_id"]}, src_host)
-      conn['host'].update({"_id": dest_host["_id"]}, dest_host)
+      logging.error("hard" + src_host["hostname"] + "->" + dest_host["hostname"])
+      jobs.append(createIperfJob(src_host, dest_host))
       break;
 
   query = conn['flow'].find({
