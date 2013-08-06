@@ -12,4 +12,6 @@ def load_hostlist():
     hostlist.append(host["hostname"])
   return hostlist
 
+def hosts_in_group():
 
+def is_host_in_group(host1, host2):

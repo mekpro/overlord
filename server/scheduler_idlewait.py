@@ -32,8 +32,8 @@ def getJobForHost(src_hostname, dt):
       logging.error("soft deadline " + src_host["hostname"] + "->" + dest_host["hostname"])
       jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
       src_host['status'] = 'running'
-      conn['host'].update({"_id": src_host["_id"]}, src_host)
       dest_host['status'] = 'running'
+      conn['host'].update({"_id": src_host["_id"]}, src_host)
       conn['host'].update({"_id": dest_host["_id"]}, dest_host)
       break;
 
@@ -41,8 +41,8 @@ def getJobForHost(src_hostname, dt):
       logging.error("hard deadline " + src_host["hostname"] + "->" + dest_host["hostname"])
       jobs.append({'type':'iperf','hostname': dest_host["hostname"]})
       src_host['status'] = 'running'
-      conn['host'].update({"_id": src_host["_id"]}, src_host)
       dest_host['status'] = 'running'
+      conn['host'].update({"_id": src_host["_id"]}, src_host)
       conn['host'].update({"_id": dest_host["_id"]}, dest_host)
       break;
 
