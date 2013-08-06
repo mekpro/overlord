@@ -18,6 +18,12 @@ FLOWS = [
         ['fe','c1','c6'],
         ['fe','c1','c3','c5'],
         ]
+GROUPS = [
+        ['fe'],
+        ['c0', 'c1'],
+        ['c2', 'c3'],
+        ['c4', 'c5', 'c6'],
+        ]
 
 def init_test_schema():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
@@ -28,6 +34,8 @@ def init_test_schema():
   valuesdb.drop()
   flowdb = conn['flow']
   flowdb.drop()
+  groupdb = conn['group']
+  groupdb.drop()
 
   # initdata 
   for hostname,flows in zip(HOSTS,FLOWS):
@@ -46,6 +54,14 @@ def init_test_schema():
         'last_ping_dt': datetime.datetime(2000, 1, 1, 0, 0)
       }
       flowdb.insert(flow)
+  
+  #init group data
+  for group in GROUPS:
+    for host_i in group:
+      for host_j in group:
+        row = {'x': host_i, 'y': host_j}
+        groupdb.insert(row)
+      
 
 def get_flowlist(src_host):
   result = []

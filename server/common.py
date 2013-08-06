@@ -11,6 +11,3 @@ def load_hostlist():
   for host in conn.host.find():
     hostlist.append(host["hostname"])
   return hostlist
-
-def is_host_in_group(host1, host2):
-  pass
