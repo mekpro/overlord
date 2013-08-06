@@ -69,4 +69,4 @@ def index(hostname=0):
 
 if __name__ == '__main__':
   scheduler.initialize()
-  run(host='0.0.0.0', port=8081)
+  run(server='paste', host='0.0.0.0', port=8081)
