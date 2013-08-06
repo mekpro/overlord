@@ -188,10 +188,10 @@ def graph_force():
             },
             "adjacencies" : [hostname]
           }
-    iperf_tables = host_tables(hostname, "iperf")
-    for row in iperf_tables:
+    dest_list = flowlist(hostname)
+    for dest in dest_list:
       adj = {
-        "nodeTo": row["dest"],
+        "nodeTo": dest,
         "nodeFrom": hostname,
         "data": {"$color": "#557EAA"},
         }
