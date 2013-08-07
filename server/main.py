@@ -20,7 +20,7 @@ def change_host_status(hostname, status, dt):
 
 def record_values(src_hostname, values, dt):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
-  logging.error("values : %s" %str(values))
+  logging.error(src_hostname +" - values : " +str(values))
   src_host = common.select_host(src_hostname)
   src_group = common.select_group(src_host["gid"])
   for r in values:
@@ -47,19 +47,18 @@ def record_values(src_hostname, values, dt):
     conn.values.insert(row)
     logging.error("recording : %s" %str(row['src']))
     conn.flow.update({'_id': flow["_id"]}, flow)
-    logging.error("updating flow time:"+  str(flow['last_iperf_dt']) +" : "+ str(type(flow['src'])) + "->" + str(type(flow['dest'])))
+#    logging.error("updating flow time:"+  str(flow['last_iperf_dt']) +" : "+ flow['src'] + "->" + flow['dest'])
 
   src_host["status"] = 'idle'
   src_group["status"] = 'idle'
   conn.host.update({'_id':src_host["_id"]}, src_host)
   conn.hostgroup.update({'_id':src_group["_id"]}, src_group)
-  
  
 
 @post('/listen')
 def index(hostname=0):
   d = request.json
-  logging.error('POST request:' +str(d))
+#  logging.error('POST request:' +str(d))
   if not authen(d["hostname"], d["authkey"]):
     return {'error': 'authenticate fail'}
   dt = datetime.datetime.now()
@@ -68,7 +67,7 @@ def index(hostname=0):
   jobs = scheduler.getJobForHost(d["hostname"], dt)
   result = dict()
   result['jobs'] = jobs
-  logging.error(str(result))
+#  logging.error(str(result))
   return result
 
 if __name__ == '__main__':

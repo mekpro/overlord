@@ -42,7 +42,7 @@ def init_test_schema():
   hostgroupdb.drop()
 
   # initdata 
-  for group in range(1,GROUP_COUNT):
+  for group in range(1,GROUP_COUNT+1):
     g = {
       'gid': group,
       'status': 'idle', # idle, internal, external 
