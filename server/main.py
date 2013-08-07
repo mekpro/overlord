@@ -21,7 +21,8 @@ def change_host_status(hostname, status, dt):
 def record_values(src_hostname, values, dt):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   logging.error("values : %s" %str(values))
-  src_host = conn.host.find_one({'hostname': src_hostname})
+  src_host = common.select_host(src_hostname)
+  src_group = common.select_group(src_host["gid"])
   for r in values:
     flow_query = {'src': src_hostname, 'dest': r["dest"]}
     flow = conn.flow.find_one(flow_query)
@@ -49,7 +50,10 @@ def record_values(src_hostname, values, dt):
     logging.error("updating flow time:"+  str(flow['last_iperf_dt']) +" : "+ str(type(flow['src'])) + "->" + str(type(flow['dest'])))
 
   src_host["status"] = 'idle'
+  src_group["status"] = 'idle'
   conn.host.update({'_id':src_host["_id"]}, src_host)
+  conn.hostgroup.update({'_id':src_group["_id"]}, src_group)
+  
  
 
 @post('/listen')

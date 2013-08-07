@@ -28,10 +28,12 @@ def getJobForHost(src_hostname, dt):
   if config.ENABLE_HOSTGROUP:
     src_group = common.select_group(src_host["gid"])
     if src_group["status"] == 'external':
-      logging.error('okay to run external')
-      query['dest'] = { "$in": common.group_members(src_group)}
+      members = common.group_members(src_group)
+      logging.error("members :%s" %str(members))
+      query['dest'] = { "$in": members}
 
   flows = conn.flow.find(query).sort('last_iperf_dt',1)
+  logging.error("flows count: %d " %flows.count())
   # Do only one iperf to made the whole system work concurrently
   for flow in flows:
     dest_host = common.select_host(flow['dest'])
