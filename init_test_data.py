@@ -38,16 +38,16 @@ def init_test_schema():
   valuesdb.drop()
   flowdb = conn['flow']
   flowdb.drop()
-  groupdb = conn['group']
-  groupdb.drop()
+  hostgroupdb = conn['hostgroup']
+  hostgroupdb.drop()
 
   # initdata 
   for group in range(1,GROUP_COUNT):
     g = {
-      'group': group,
-      'status': 'IDLE', # IDLE, INTERNAL, EXTERNAL
+      'gid': group,
+      'status': 'idle', # idle, internal, external 
     }
-    groupdb.insert(g)
+    hostgroupdb.insert(g)
 
   for hostname,flows in zip(HOSTS,FLOWS):
     h = {
@@ -55,12 +55,12 @@ def init_test_schema():
       'authkey': 'none',
       'status': 'idle',
       'last_dt': datetime.datetime(2000, 1, 1, 0, 0),
-      'group': hostname[1] 
+      'gid': hostname[1] 
     }
     hostdb.insert(h)
     for dest in flows:
       flow = {
-        'src': hostname,
+        'src': hostname[0],
         'dest': dest,
         'last_iperf_dt': datetime.datetime(2000, 1, 1, 0, 0),
         'last_ping_dt': datetime.datetime(2000, 1, 1, 0, 0)

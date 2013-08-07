@@ -46,7 +46,7 @@ def record_values(src_hostname, values, dt):
     conn.values.insert(row)
     logging.error("recording : %s" %str(row['src']))
     conn.flow.update({'_id': flow["_id"]}, flow)
-    logging.error("updating flow time:"+  str(flow['last_iperf_dt']) +" : "+ flow['src'] + "->" + flow['dest'])
+    logging.error("updating flow time:"+  str(flow['last_iperf_dt']) +" : "+ str(type(flow['src'])) + "->" + str(type(flow['dest'])))
 
   src_host["status"] = 'idle'
   conn.host.update({'_id':src_host["_id"]}, src_host)
