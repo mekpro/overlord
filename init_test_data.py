@@ -6,7 +6,18 @@ import sys
 
 from server import config
 
-HOSTS = ['fe','c0','c1','c2','c3','c4','c5','c6']
+GROUP_COUNT = 4
+
+HOSTS = [
+        ['fe', 1],
+        ['c0', 2],
+        ['c1', 2],
+        ['c2', 3],
+        ['c3', 3],
+        ['c4', 4],
+        ['c5', 4],
+        ['c6', 4],
+        ]
 FLOWS = [
         ['c0','c1','c2','c3','c4','c5','c6'],
         ['fe','c2','c3','c6'],
@@ -18,13 +29,6 @@ FLOWS = [
         ['fe','c1','c6'],
         ['fe','c1','c3','c5'],
         ]
-GROUPS = [
-        ['fe'],
-        ['c0', 'c1'],
-        ['c2', 'c3'],
-        ['c4', 'c5', 'c6'],
-        ]
-
 def init_test_schema():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
   # Clear DB
@@ -38,12 +42,20 @@ def init_test_schema():
   groupdb.drop()
 
   # initdata 
+  for group in range(1,GROUP_COUNT):
+    g = {
+      'group': group,
+      'status': 'IDLE', # IDLE, INTERNAL, EXTERNAL
+    }
+    groupdb.insert(g)
+
   for hostname,flows in zip(HOSTS,FLOWS):
     h = {
-      'hostname': hostname,
+      'hostname': hostname[0],
       'authkey': 'none',
       'status': 'idle',
       'last_dt': datetime.datetime(2000, 1, 1, 0, 0),
+      'group': hostname[1] 
     }
     hostdb.insert(h)
     for dest in flows:
@@ -55,14 +67,6 @@ def init_test_schema():
       }
       flowdb.insert(flow)
   
-  #init group data
-  for group in GROUPS:
-    for host_i in group:
-      for host_j in group:
-        row = {'x': host_i, 'y': host_j}
-        groupdb.insert(row)
-      
-
 def get_flowlist(src_host):
   result = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
