@@ -7,10 +7,10 @@ class Utilization():
     self.last_net = n.bytes_sent + n.bytes_recv
     self.last_time = time.time()
 
-  def cpu_time(self):
+  def cpu_use(self):
     return psutil.cpu_percent(interval=0.2) 
 
-  def net_use_rate(self):
+  def net_use(self):
     n = psutil.net_io_counters()
     cur_net = n.bytes_sent + n.bytes_recv
     dif_net = cur_net - self.last_net
@@ -24,5 +24,5 @@ if __name__ == '__main__':
   ut = Utilization()
   while True:
     time.sleep(1)
-    print ut.cpu_time()
-    print ut.net_use_rate() / 1024000
+    print ut.cpu_use()
+    print ut.net_use() / 1024000

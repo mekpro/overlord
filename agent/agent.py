@@ -6,6 +6,7 @@ import requests
 import logging
 import config
 from lib.daemon import Daemon
+from lib.utilization import Utilization
 
 from lib import netperfshell
 from lib import pingshell
@@ -23,14 +24,36 @@ def spawn_iperf_server(port=None):
   print 'netperf server started'
 
 class Agent(Daemon):
+  def do_jobs(jobs):
+    results = []
+    for job in jobs:
+      logger.error('Working with %s', str(job))
+      result = dict()
+      result['src'] = config.AGENT_HOSTNAME
+      result['dest'] = job["hostname"]
+      if job['type'] == 'iperf':
+        result['type'] = 'iperf'
+        tmp = netperfshell.run_iperf(job["hostname"])
+        values = netperfshell.parse_iperf(tmp)
+      elif job['type'] == 'ping':
+        result['type'] = 'ping'
+        tmp = pingshell.run_ping(job["hostname"])
+        values = pingshell.parse_ping(tmp)
+      else:
+        values = {}
+      for k,v in values.iteritems():
+        result[k] = v
+      results.append(result)
+    return results
+
   def run(self):
     spawn_iperf_server()
+    utilize = Utilization()
     headers = {'content-type': 'application/json'}
-    request = dict()
-    request["hostname"] = config.AGENT_HOSTNAME
-    request["authkey"] = 'none'
-    request["state"] = 'idle'
-    request["results"] = []
+    request = {
+      "hostname": config.AGENT_HOSTNAME,
+      "authkey": 'none',
+    }
     while True:
       logger.info('connecting to %s with %s' %(config.SERVER, json.dumps(request)))
       try:
@@ -43,24 +66,8 @@ class Agent(Daemon):
           logger.error('Sleeping ...')
           time.sleep(config.INTERVAL)
         else:
-          for job in jobs:
-            logger.error('Working with %s', str(job))
-            result = dict()
-            result['src'] = config.AGENT_HOSTNAME
-            result['dest'] = job["hostname"]
-            if job['type'] == 'iperf':
-              result['type'] = 'iperf'
-              tmp = netperfshell.run_iperf(job["hostname"])
-              values = netperfshell.parse_iperf(tmp)
-            elif job['type'] == 'ping':
-              result['type'] = 'ping'
-              tmp = pingshell.run_ping(job["hostname"])
-              values = pingshell.parse_ping(tmp)
-            else:
-              values = {}
-            for k,v in values.iteritems():
-              result[k] = v
-            request["results"].append(result)
+          # "state": 'idle'
+          request["results"] = do_jobs(jobs)
       except (Timeout):
         logging.error("Connection to "+config.SERVER+" timeout")
         time.sleep(config.INTERVAL)
