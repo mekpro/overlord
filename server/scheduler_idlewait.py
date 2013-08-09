@@ -25,8 +25,8 @@ def getJobForHost(src_hostname, dt):
     'src' : src_hostname,
     'last_iperf_dt': {"$lt" : iperf_dt}
   }
+  src_group = common.select_group(src_host["gid"])
   if config.ENABLE_HOSTGROUP:
-    src_group = common.select_group(src_host["gid"])
     if src_group["status"] == 'external':
       members = common.group_members(src_group)
       logging.error("hostgroup members :%s" %str(members))
