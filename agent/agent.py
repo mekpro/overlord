@@ -23,29 +23,29 @@ def spawn_iperf_server(port=None):
   output = os.system('netserver')
   print 'netperf server started'
 
-class Agent(Daemon):
-  def do_jobs(jobs):
-    results = []
-    for job in jobs:
-      logger.error('Working with %s', str(job))
-      result = dict()
-      result['src'] = config.AGENT_HOSTNAME
-      result['dest'] = job["hostname"]
-      if job['type'] == 'iperf':
-        result['type'] = 'iperf'
-        tmp = netperfshell.run_iperf(job["hostname"])
-        values = netperfshell.parse_iperf(tmp)
-      elif job['type'] == 'ping':
-        result['type'] = 'ping'
-        tmp = pingshell.run_ping(job["hostname"])
-        values = pingshell.parse_ping(tmp)
-      else:
-        values = {}
-      for k,v in values.iteritems():
-        result[k] = v
-      results.append(result)
-    return results
+def do_jobs(jobs):
+  results = []
+  for job in jobs:
+    logger.error('Working with %s', str(job))
+    result = dict()
+    result['src'] = config.AGENT_HOSTNAME
+    result['dest'] = job["hostname"]
+    if job['type'] == 'iperf':
+      result['type'] = 'iperf'
+      tmp = netperfshell.run_iperf(job["hostname"])
+      values = netperfshell.parse_iperf(tmp)
+    elif job['type'] == 'ping':
+      result['type'] = 'ping'
+      tmp = pingshell.run_ping(job["hostname"])
+      values = pingshell.parse_ping(tmp)
+    else:
+      values = {}
+    for k,v in values.iteritems():
+      result[k] = v
+    results.append(result)
+  return results
 
+class Agent(Daemon):
   def run(self):
     spawn_iperf_server()
     utilize = Utilization()
@@ -55,9 +55,8 @@ class Agent(Daemon):
       "authkey": 'none',
     }
     while True:
-      logger.info('connecting to %s with %s' %(config.SERVER, json.dumps(request)))
       try:
-        # get my state
+        # get my status
         # if busy
         #   send busy
         #   short sleep
@@ -67,24 +66,29 @@ class Agent(Daemon):
         #   do jobs or idle
         # !!!
         # must change server request from listen to listen/getjobs
+        request["results"] = []
         net_use = utilize.net_use()
         cpu_use = utilize.cpu_use()
         if cpu_use > config.CPU_BUSY or net_use > config.NET_BUSY:
-          request["state"] = "busy"
-          response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
+          request["status"] = "busy"
+          response = requests.post(config.SERVER_LISTEN, data=json.dumps(request), headers=headers)
           time.sleep(config.INTERVAL)
         else:
-          response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
+          request["status"] = "idle"
+          requests.post(config.SERVER_LISTEN, data=json.dumps(request), headers=headers)
+          response = requests.post(config.SERVER_GETJOBS, data=json.dumps(request), headers=headers)
           logger.info('response: %s' %(response.json()))
-          response = response.json()
-          jobs = response["jobs"]
+          jobs = response.json()["jobs"]
           if len(jobs) == 0:
             logger.error('Sleeping ...')
             time.sleep(config.INTERVAL)
           else:
+            logger.info('jobs: %s' %(str(jobs)))
             request["results"] = do_jobs(jobs)
-      except (Timeout):
-        logging.error("Connection to "+config.SERVER+" timeout")
+            request["status"] = "idle"
+            response = requests.post(config.SERVER_LISTEN, data=json.dumps(request), headers=headers)
+      except (requests.Timeout):
+        logging.error("Connection to "+config.SERVER_LISTEN+" timeout")
         time.sleep(config.INTERVAL)
  
 

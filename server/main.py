@@ -56,18 +56,24 @@ def record_values(src_hostname, values, dt):
  
 
 @post('/listen')
-def index(hostname=0):
+def listen():
   d = request.json
 #  logging.error('POST request:' +str(d))
   if not authen(d["hostname"], d["authkey"]):
     return {'error': 'authenticate fail'}
   dt = datetime.datetime.now()
-  change_host_status(d["hostname"], "idle", dt)
+  change_host_status(d["hostname"], d["status"], dt)
   record_values(d["hostname"], d["results"], dt)
+  return {'status': 'ok'}
+
+@post('/getjobs')
+def getjobs():
+  d = request.json
+  if not authen(d["hostname"], d["authkey"]):
+    return {'error': 'authenticate fail'}
+  dt = datetime.datetime.now()
   jobs = scheduler.getJobForHost(d["hostname"], dt)
-  result = dict()
-  result['jobs'] = jobs
-#  logging.error(str(result))
+  result = {'jobs': jobs}
   return result
 
 if __name__ == '__main__':
