@@ -57,17 +57,32 @@ class Agent(Daemon):
     while True:
       logger.info('connecting to %s with %s' %(config.SERVER, json.dumps(request)))
       try:
-        response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
-        request["results"] = []
-        logger.info('response: %s' %(response.json()))
-        response = response.json()
-        jobs = response["jobs"]
-        if len(jobs) == 0:
-          logger.error('Sleeping ...')
+        # get my state
+        # if busy
+        #   send busy
+        #   short sleep
+        # if idle
+        #   send idle
+        #   get jobs
+        #   do jobs or idle
+        # !!!
+        # must change server request from listen to listen/getjobs
+        net_use = utilize.net_use()
+        cpu_use = utilize.cpu_use()
+        if cpu_use > config.CPU_BUSY or net_use > config.NET_BUSY:
+          request["state"] = "busy"
+          response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
           time.sleep(config.INTERVAL)
         else:
-          # "state": 'idle'
-          request["results"] = do_jobs(jobs)
+          response = requests.post(config.SERVER, data=json.dumps(request), headers=headers)
+          logger.info('response: %s' %(response.json()))
+          response = response.json()
+          jobs = response["jobs"]
+          if len(jobs) == 0:
+            logger.error('Sleeping ...')
+            time.sleep(config.INTERVAL)
+          else:
+            request["results"] = do_jobs(jobs)
       except (Timeout):
         logging.error("Connection to "+config.SERVER+" timeout")
         time.sleep(config.INTERVAL)
