@@ -2,22 +2,17 @@ import psutil
 import time
 
 class Utilization():
-  def __init__(self):
-    n = psutil.net_io_counters()
-    self.last_net = n.bytes_sent + n.bytes_recv
-    self.last_time = time.time()
-
   def cpu_use(self):
     return psutil.cpu_percent(interval=0.2) 
 
-  def net_use(self):
+  def net_use(self, interval=0.1):
     n = psutil.net_io_counters()
-    cur_net = n.bytes_sent + n.bytes_recv
-    dif_net = cur_net - self.last_net
-    time_dif = time.time() - self.last_time
-    use_rate = dif_net / time_dif
-    self.last_net = cur_net
-    self.last_time = time.time()
+    old_net = n.bytes_sent + n.bytes_recv
+    time.sleep(interval)
+    n = psutil.net_io_counters()
+    new_net = n.bytes_sent + n.bytes_recv
+    dif_net = new_net - old_net
+    use_rate = dif_net / interval 
     return use_rate
 
 if __name__ == '__main__':
@@ -25,4 +20,4 @@ if __name__ == '__main__':
   while True:
     time.sleep(1)
     print ut.cpu_use()
-    print ut.net_use() / 1024000
+    print ut.net_use() / 1024
