@@ -36,14 +36,15 @@ def group_members(hostgroup):
     members.append(r['hostname'])
   return members
 
-def update_group_status(src_group, src_host, dest_host):
+def update_group_status(src_group, dest_group):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
-  if not hosts_same_group(src_host, dest_host):
-    src_group["status"] = 'external' 
+  if src_group["gid"] == dest_group["gid"]:
+    src_group["status"] = 'internal' 
   else:
-    src_group["status"] = 'internal'
+    src_group["status"] = 'external'
+    dest_group["status"] = 'external'
   conn['hostgroup'].update({"_id": src_group["_id"]}, src_group)
-  
+  conn['hostgroup'].update({"_id": dest_group["_id"]}, dest_group)
 
 def createIperfJob(src_host, dest_host):
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]

@@ -37,17 +37,18 @@ def getJobForHost(src_hostname, dt):
   # Do only one iperf to made the whole system work concurrently
   for flow in flows:
     dest_host = common.select_host(flow['dest'])
+    dest_group = common.select_group(dest_host["gid"])
     # Soft Deadline
     if dest_host['status'] == 'idle':
       logging.error("soft:" + src_host["hostname"] + "->" + dest_host["hostname"])
       jobs.append(common.createIperfJob(src_host, dest_host))
-      common.update_group_status(src_group, src_host, dest_host)
+      common.update_group_status(src_group, dest_group)
       break;
     # Hard Deadline
     if dest_host['status'] == 'busy' and flow['last_iperf_dt'] < iperf_hard_dt:
       logging.error("hard:" + src_host["hostname"] + "->" + dest_host["hostname"])
       jobs.append(common.createIperfJob(src_host, dest_host))
-      common.update_group_status(src_group, src_host, dest_host)
+      common.update_group_status(src_group, dest_group)
       break;
 
   query = conn['flow'].find({
