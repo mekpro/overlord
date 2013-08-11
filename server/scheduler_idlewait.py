@@ -29,7 +29,7 @@ def getJobForHost(src_hostname, dt):
   if config.ENABLE_HOSTGROUP:
     if src_group["status"] == 'external':
       members = common.group_members(src_group)
-      logging.error("hostgroup members :%s" %str(members))
+      logging.error("internal members :%s" %str(members))
       query['dest'] = { "$in": members}
 
   flows = conn.flow.find(query).sort('last_iperf_dt',1)

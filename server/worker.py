@@ -7,7 +7,7 @@ import common
 import config
 
 def is_host_timeout(host, current_dt):
-  if host['last_dt'] + config.STATE_TIMEOUT_INTERVAL < current_dt:
+  if host['last_dt'] + config.STATE_TIMEOUT_INTERVAL > current_dt:
     return True
   else:
     return False
