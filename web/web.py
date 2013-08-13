@@ -11,28 +11,28 @@ import config
 
 def get_dt_start(request):
   if 'dt_start' not in request.GET:
-    dt_start = datetime.datetime.now() - datetime.timedelta(minutes=120)
+    dt_start = datetime.datetime.now() - config.DT_QUERY
   else:
     dt_start = query.dt_from_timestamp(float(request.GET['dt_start']))
   return dt_start
 
 def get_dt_end(request, dt_start):
   if 'dt_end' not in request.GET:
-    dt_end = dt_start + datetime.timedelta(minutes=120)
+    dt_end = dt_start + config.DT_QUERY
   else:
     dt_end = query.dt_from_timestamp(float(request.GET['dt_end']))
   return dt_end
 
 def post_dt_start(request):
   if request.forms.get('dt_start') == '':
-    dt_start = datetime.datetime.now() - datetime.timedelta(hours=2)
+    dt_start = datetime.datetime.now() - config.DT_QUERY
   else:
     dt_start = query.parse_form_dt(request.forms.get('dt_start'))
   return dt_start
 
 def post_dt_end(request, dt_start):
   if request.forms.get('dt_end') == '':
-    dt_end = dt_start + datetime.timedelta(hours=2)
+    dt_end = dt_start + config.DT_QUERY
   else:
     dt_end = query.parse_form_dt(request.forms.get('dt_end'))
   return dt_end
@@ -68,7 +68,7 @@ def heatmap_daily_view():
 @get('/host/<hostname>')
 def host_view(hostname):
   last_update = datetime.datetime.now()
-  dt_start = datetime.datetime.now() - datetime.timedelta(hours=2)
+  dt_start = datetime.datetime.now() - config.DT_QUERY
   dt_end = datetime.datetime.now()
   hostlist = query.hostlist()
   ping_table = query.host_mapreduce(hostname, 'ping', 'avg', dt_start, dt_end)
