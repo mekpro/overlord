@@ -28,8 +28,8 @@ def getJobForHost(src_hostname, dt):
       logging.error("internal members :%s" %str(members))
       query['dest'] = { "$in": members}
 
-  running_hosts = conn.host.count({'status':'running'})
-  if ruuning_hosts >= config.MAX_RUNNING:
+  running_hosts = conn.host.find({'status':'running'}).count()
+  if running_hosts >= config.MAX_RUNNING:
     query['src'] = 'this should found nothing'
 
   flows = conn.flow.find(query).sort('last_iperf_dt',1)
