@@ -73,6 +73,7 @@ class Agent(Daemon):
         load_avg = utilize.load_avg()
         request["results"].append({
             'type' : 'utilization',
+            'dest' : config.AGENT_HOSTNAME,
             'cpu' : cpu_use,
             'net' : net_use_last,
             'loadavg' : load_avg,

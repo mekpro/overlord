@@ -21,8 +21,12 @@ def record_values(src_hostname, status, values, dt):
     row["src"] = src_hostname
     row["dt"] = dt
     row["type"] = r["type"]
-    if 'dest' in r:
-      row["dest"] = r["dest"]
+    row["dest"] = r["dest"]
+    if row["type"] == 'utilization':
+      row["cpu"] = float(r["cpu"])
+      row["net"] = float(r["net"])
+      row["loadavg"] = float(r["loadavg"])
+    else:
       flow_query = {'src': src_hostname, 'dest': r["dest"]}
       flow = conn.flow.find_one(flow_query)
       if row["type"] == 'ping':
@@ -30,25 +34,17 @@ def record_values(src_hostname, status, values, dt):
         row["max"] = float(r["max"])
         row["avg"] = float(r["avg"])
         flow["last_ping_dt"] = dt
-        conn.flow.update({'_id': flow["_id"]}, flow)
       elif row["type"] == 'iperf':
         row["bandwidth"] = float(r["bandwidth"])
         flow["last_iperf_dt"] = dt
-        conn.flow.update({'_id': flow["_id"]}, flow)
       else:
         logging.error("invalid value type")
         return False
-    else:
-      if row["type"] == 'utilization':
-        row["cpu"] = float(r["cpu"])
-        row["net"] = float(r["net"])
-        row["loadavg"] = float(r["loadavg"])
-      else:
-        logging.error("invalid value type")
-        return False
+      conn.flow.update({'_id': flow["_id"]}, flow)
+
     conn.values.insert(row)
     logging.error("recording : %s" %str(row['src']))
-  
+
   if status == 'idle':
     src_host["status"] = 'idle'
     src_group["status"] = 'idle'
