@@ -12,12 +12,28 @@ def get_unchecked_flow():
   flow_count = conn.flow.find(flow_query).count()
   return flow_count
 
+def get_average_bandwidth(src_hostname):
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  flow_query = {'src' : src_hostname, 'type': 'iperf'}
+  summation = 0
+  count = 0
+  for flow in conn.flow.find(flow_query):
+    summation += flow["bandwidth"] 
+    count += 1 
+  return summation/count
+
 if __name__ == '__main__':
+  start_dt = datetime.datetime.now()
   while True:
     time.sleep(1)
     flows_unchecked = get_unchecked_flow()
     if flows_unchecked == 0:
       print 'complete'
+      time_to_complete = datetime.datetime.now() - start_dt
+      print get_average_bandwidth('fe') 
+      print get_average_bandwidth('c0') 
+      print get_average_bandwidth('c1') 
+      break;
     else:
       print 'waiting %d' %flows_unchecked
 
