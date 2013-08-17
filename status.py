@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import sys
-import config
-import common
+from server import config
+from server import common
 
 def display():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]

@@ -31,13 +31,18 @@ def do_jobs(jobs):
     result['src'] = config.AGENT_HOSTNAME
     result['dest'] = job["hostname"]
     if job['type'] == 'iperf':
-      result['type'] = 'iperf'
       tmp = netperfshell.run_iperf(job["hostname"])
-      values = netperfshell.parse_iperf(tmp)
+      logger.error('netperf output :' +tmp);
+      if not tmp == '':
+        values = netperfshell.parse_iperf(tmp)
+        result['type'] = 'iperf'
+      else: 
+        values = {}
+        result['type'] = 'failed'
     elif job['type'] == 'ping':
-      result['type'] = 'ping'
       tmp = pingshell.run_ping(job["hostname"])
       values = pingshell.parse_ping(tmp)
+      result['type'] = 'ping'
     else:
       values = {}
     for k,v in values.iteritems():
