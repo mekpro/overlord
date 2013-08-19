@@ -28,17 +28,13 @@ if __name__ == '__main__':
     time.sleep(1)
     flows_unchecked = get_unchecked_flow()
     if flows_unchecked.count() == 0:
-      print 'complete'
       time_to_complete = datetime.datetime.now() - start_dt
-      print time_to_complete
-      print get_average_bandwidth('fe') 
-      print get_average_bandwidth('c0') 
-      print get_average_bandwidth('c1') 
+      print str(time_to_complete.seconds) + "," + str(get_average_bandwidth('fe')) + "," + str(get_average_bandwidth('c0'))
       break;
     else:
-      pass
 #      print 'waiting %d' %flows_unchecked.count()
-#      if flows_unchecked.count() < 3:
-#        for f in flows_unchecked:
-#          print f
+      if flows_unchecked.count() < 3:
+        for f in flows_unchecked:
+          pass
+          #print f
 

@@ -1,5 +1,6 @@
 from pymongo import MongoClient
-import sys
+import os
+import time
 from server import config
 from server import common
 
@@ -17,4 +18,7 @@ def display():
     print host["hostname"] + " : " +host["status"]
 
 if __name__ == '__main__':
-  display() 
+  while True: 
+    os.system('clear')
+    display() 
+    time.sleep(1)
