@@ -72,7 +72,13 @@ def init_test_schema():
       'authkey': 'none',
       'status': 'idle',
       'last_dt': datetime.datetime(2000, 1, 1, 0, 0),
-      'gid': hostname[1] 
+      'gid': hostname[1],
+      'uname_r': '3.11.0-12-generic',
+      'uname_i': 'x86_64',
+      'cpu_name': 'Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz',
+      'cpu_cores': 2,
+      'latitude': random.randint(1,10000000) / 1000000.0,
+      'longtitude': random.randint(1,10000000) / 1000000.0
     }
     hostdb.insert(h)
     for dest in flows:
@@ -83,7 +89,7 @@ def init_test_schema():
         'last_ping_dt': datetime.datetime(2000, 1, 1, 0, 0)
       }
       flowdb.insert(flow)
-  
+
 def get_flowlist(src_host):
   result = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]

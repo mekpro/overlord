@@ -101,6 +101,11 @@ def api_hoststats():
   hoststats = query.hoststats()
   return {"result" : hoststats}
 
+@get('/api/hostinfo/<hostname>')
+def api_hoststats(hostname):
+  hostinfo = query.hostinfo(hostname)
+  return {"result" : hostinfo}
+
 @get('/api/flowlist/<hostname>')
 def api_flowlist(hostname):
   flowlist = query.flowlist(hostname)

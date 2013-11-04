@@ -33,6 +33,15 @@ def hoststats():
     result.append(r)
   return result
 
+def hostinfo(hostname):
+  conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
+  result = {}
+  host = conn.host.find_one({'hostname': hostname})
+  for k,v in host.items():
+    if k != '_id':
+      result[k] = str(v)
+  return result
+
 def flowlist(hostname):
   result = []
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
