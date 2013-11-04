@@ -136,5 +136,13 @@ def api_aggregate_host(hostname, module, metric):
     table[k]['last_dt'] = query.dt_to_timestamp(table[k]['last_dt'])
   return {"result": table}
 
+#@get('/api/config/addhost')
+
+#@get('/api/config/delhost')
+
+#@get('/api/config/addflow')
+
+#@get('/api/config/delflow')
+
 if __name__ == '__main__':
   run (host='0.0.0.0', port=8082, debug=True,reloader=True)
