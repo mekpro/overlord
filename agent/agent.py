@@ -31,13 +31,18 @@ def do_jobs(jobs):
     result['src'] = config.AGENT_HOSTNAME
     result['dest'] = job["hostname"]
     if job['type'] == 'iperf':
-      result['type'] = 'iperf'
       tmp = netperfshell.run_iperf(job["hostname"])
-      values = netperfshell.parse_iperf(tmp)
+      logger.error('netperf output :' +tmp);
+      if not tmp == '':
+        values = netperfshell.parse_iperf(tmp)
+        result['type'] = 'iperf'
+      else: 
+        values = {}
+        result['type'] = 'failed'
     elif job['type'] == 'ping':
-      result['type'] = 'ping'
       tmp = pingshell.run_ping(job["hostname"])
       values = pingshell.parse_ping(tmp)
+      result['type'] = 'ping'
     else:
       values = {}
     for k,v in values.iteritems():
@@ -67,9 +72,18 @@ class Agent(Daemon):
         # !!!
         # must change server request from listen to listen/getjobs
         request["results"] = []
-        net_use = utilize.net_use()
         cpu_use = utilize.cpu_use()
-        if cpu_use > config.CPU_BUSY or net_use > config.NET_BUSY:
+        net_use_now = utilize.net_use_now()
+        net_use_last = utilize.net_use_last()
+        load_avg = utilize.load_avg()
+        request["results"].append({
+            'type' : 'utilization',
+            'dest' : config.AGENT_HOSTNAME,
+            'cpu' : cpu_use,
+            'net' : net_use_last,
+            'loadavg' : load_avg,
+        })
+        if cpu_use > config.CPU_BUSY or net_use_now > config.NET_BUSY:
           request["status"] = "busy"
           response = requests.post(config.SERVER_LISTEN, data=json.dumps(request), headers=headers)
           time.sleep(config.INTERVAL)

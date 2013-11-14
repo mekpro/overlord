@@ -17,31 +17,34 @@ def record_values(src_hostname, status, values, dt):
   src_host = common.select_host(src_hostname)
   src_group = common.select_group(src_host["gid"])
   for r in values:
-    flow_query = {'src': src_hostname, 'dest': r["dest"]}
-    flow = conn.flow.find_one(flow_query)
     row = dict()
     row["src"] = src_hostname
     row["dt"] = dt
-    row["dest"] = r["dest"]
     row["type"] = r["type"]
-    if row["type"] == 'ping':
-      row["min"] = float(r["min"])
-      row["max"] = float(r["max"])
-      row["avg"] = float(r["avg"])
-      flow["last_ping_dt"] = dt
-    elif row["type"] == 'iperf':
-      row["bandwidth"] = float(r["bandwidth"])
-      flow["last_iperf_dt"] = dt
+    row["dest"] = r["dest"]
+    if row["type"] == 'utilization':
+      row["cpu"] = float(r["cpu"])
+      row["net"] = float(r["net"])
+      row["loadavg"] = float(r["loadavg"])
     else:
-      logging.error("invalid value type: %s" %srow["type"])
-      return False
-    conn.flow.update({'_id': flow["_id"]}, flow)
+      flow_query = {'src': src_hostname, 'dest': r["dest"]}
+      flow = conn.flow.find_one(flow_query)
+      if row["type"] == 'ping':
+        row["min"] = float(r["min"])
+        row["max"] = float(r["max"])
+        row["avg"] = float(r["avg"])
+        flow["last_ping_dt"] = dt
+      elif row["type"] == 'iperf':
+        row["bandwidth"] = float(r["bandwidth"])
+        flow["last_iperf_dt"] = dt
+      else:
+        logging.error("invalid value type")
+        return False
+      conn.flow.update({'_id': flow["_id"]}, flow)
 
     conn.values.insert(row)
     logging.error("recording : %s" %str(row['src']))
-    conn.flow.update({'_id': flow["_id"]}, flow)
-#    logging.error("updating flow time:"+  str(flow['last_iperf_dt']) +" : "+ flow['src'] + "->" + flow['dest'])
-  
+
   if status == 'idle':
     src_host["status"] = 'idle'
     src_group["status"] = 'idle'

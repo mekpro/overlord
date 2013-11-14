@@ -16,11 +16,7 @@ def getJobForHost(src_hostname, dt):
   iperf_hard_dt = dt - config.IPERF_HARD_INTERVAL
   src_host = common.select_host(src_hostname)
 
-  # if my group is outside running
-  #   query only inside group
-  # else 
-  #   run normally
-    
+
   query = {
     'src' : src_hostname,
     'last_iperf_dt': {"$lt" : iperf_dt}
@@ -31,6 +27,10 @@ def getJobForHost(src_hostname, dt):
       members = common.group_members(src_group)
       logging.error("internal members :%s" %str(members))
       query['dest'] = { "$in": members}
+
+  running_hosts = conn.host.find({'status':'running'}).count()
+  if running_hosts >= config.MAX_RUNNING:
+    query['src'] = 'this should found nothing'
 
   flows = conn.flow.find(query).sort('last_iperf_dt',1)
   logging.error("flows count: %d " %flows.count())
