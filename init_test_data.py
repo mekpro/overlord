@@ -70,7 +70,7 @@ def init_test_schema():
     h = {
       'hostname': hostname[0],
       'authkey': 'none',
-      'status': 'idle',
+      'status': 'idle', # idle, busy, down
       'last_dt': datetime.datetime(2000, 1, 1, 0, 0),
       'gid': hostname[1],
       'uname_r': '3.11.0-12-generic',
