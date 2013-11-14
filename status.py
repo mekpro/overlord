@@ -1,15 +1,10 @@
 from pymongo import MongoClient
-<<<<<<< HEAD:status.py
 import sys
 import common
-=======
 import os
 import time
 from server import config
 from server import common
->>>>>>> 228bce8a35a5113b1a18754dd9d4af0d9ca12834:status.py
-
-from server import config
 
 def display():
   conn = MongoClient(config.MONGO_SERVER)[config.MONGO_DB]
